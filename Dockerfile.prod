@@ -1,0 +1,16 @@
+FROM node:18.7.0
+
+WORKDIR /chatapp
+
+COPY package.json .
+
+COPY ./container ./container
+RUN npm --version
+RUN npm install --legacy-peer-deps
+COPY . .
+
+EXPOSE 5173
+EXPOSE 5900
+EXPOSE 27017
+
+CMD ["npm","run","start"]

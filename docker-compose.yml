@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: "."
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+      - "5900:5900"
+    volumes:
+      - ./container/app/src:/container/app/src/
+      - ./container/backend/:/container/backend/
+    stdin_open: true
+    tty: true
+    depends_on:
+      - db
+    environment:
+      MONGO_DEV_URL: mongodb://db/chatapp
+      NODE_ENV: development
+      PORT: 5900
+      JWT_SECRET: "secretkeymustnotberevealedatanypoint"
+      JWT_EXPIRE: 30d
+
+  db:
+    image: mongo:4.4.6
+    volumes:
+      - mongo_db:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  mongo_db:
