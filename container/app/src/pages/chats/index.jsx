@@ -28,7 +28,6 @@ const Chats = () => {
     if (!userIsLoading) {
       socket?.emit("add-user", user)
       socket?.on("list-users", (users) => {
-        console.log(users)
         dispatch(addActiveChats(users))
       });
       socket?.on("msg-recieve", doc => {
@@ -36,6 +35,7 @@ const Chats = () => {
       });
     }
   }, [socket, user]);
+
   function onChangeChatUser(id) {
     setReceiver(id);
     navigate(`users/${id}`, {

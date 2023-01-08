@@ -8,28 +8,17 @@ import { addActiveChats } from "../appstate/chats/chat_slice"
 import useSocket from "../lib/useSocket"
 
 export const AuthWrapper = ({ children }) => {
-  const { isSuccess, isError, data, isFetching } = useCurrentUser();
+  const { isSuccess, isError, isFetching } = useCurrentUser();
   const { user } = useSelector(authSelector);
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const ws = useSocket();
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     ws?.emit("add-user", user)
-  //     ws?.on("list-users", (users) => {
-  //       dispatch(addActiveChats(users))
-  //     });
-  //     ws?.on("msg-recieve", doc => {
-  //       console.log(doc)
-  //     });
-  //   }
-  // }, [user, ws])
-
-  if (!user?.isVerified && !isFetching && isError && !isSuccess) {
-    navigate("/login")
-  } else {
+  const token = JSON.parse(localStorage.getItem("token"))
+  if (token !== undefined && token !== null) {
     return children;
   }
+  if (!isFetching && isError && !user?.isVerified) {
+    return <Navigate to={"/login"} replace />;
+  }
+
+  return isSuccess === true && children;
 
 };
