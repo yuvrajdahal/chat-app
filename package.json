@@ -9,7 +9,7 @@
     "server": "npm run dev --workspace=@chat-app/backend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "start": "npm run build && npm start --workspace=@chat-app/backend",
-    "build": "NPM_CONFIG_PRODUCTION=false npm install --legacy-peer-deps && npm run build --workspace=@chat-app/app"
+    "build": "NPM_CONFIG_PRODUCTION=false npm install --legacy-peer-deps && cd ./container/app && npm run build "
   },
   "dependencies": {
     "axios": "^1.2.1",
