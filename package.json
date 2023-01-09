@@ -8,8 +8,10 @@
     "client": "cd ./container/app && npm run dev ",
     "server": "cd ./container/backend && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "start": "npm run build && cd ./container/backend && npm start",
-    "build-app": "cd ./container/app && NPM_CONFIG_PRODUCTION=false npm install --legacy-peer-deps && npm run build "
+    "start": "npm run build-app && cd ./container/backend && npm start",
+    "build-app": "cd ./container/app && NPM_CONFIG_PRODUCTION=false npm install --legacy-peer-deps && npm run build ",
+    "server-start":" cd ./container/backend && npm start"
+
   },
   "dependencies": {
     "axios": "^1.2.1",
