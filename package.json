@@ -5,13 +5,11 @@
     "container/*"
   ],
   "scripts": {
-    "client": "cd ./container/app && npm run dev ",
-    "server": "cd ./container/backend && npm run dev",
+    "client": "npm run dev --workspace=@chat-app/app",
+    "server": "npm run dev --workspace=@chat-app/backend",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "start": "npm run build-app && cd ./container/backend && npm start",
-    "build-app": "cd ./container/app && NPM_CONFIG_PRODUCTION=false npm install --legacy-peer-deps && npm run build ",
-    "server-start":" cd ./container/backend && npm start"
-
+    "start": "npm run build && npm start --workspace=@chat-app/backend",
+    "build": "NPM_CONFIG_PRODUCTION=false npm install --legacy-peer-deps && npm run build --workspace=@chat-app/app"
   },
   "dependencies": {
     "axios": "^1.2.1",
