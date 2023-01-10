@@ -26,7 +26,9 @@ const Chats = () => {
   const { user, userIsLoading } = useSelector(authSelector);
 
   useEffect(() => {
-    setReceiver(id);
+    if (id) {
+      setReceiver(id);
+    }
     return () => setReceiver("")
   }, [location])
   // application socket manager
@@ -77,14 +79,13 @@ const Chats = () => {
       message: file
     });
   }
-
   return (
     <div className="w-full h-full flex">
       <NavBar />
       <div className='w-full hidden sm:block sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
         <Routes>
           <Route
-            path={`users/*`}
+            path={`users`}
             element={
               <Suspense fallback="loading..">
                 <Users onChangeChatUser={onChangeChatUser} />
@@ -96,7 +97,7 @@ const Chats = () => {
       {receiver?.length === 0 && <div className='w-full block sm:hidden sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
         <Routes>
           <Route
-            path={`users/*`}
+            path={`users`}
             element={
               <Suspense fallback="loading..">
                 <Users onChangeChatUser={onChangeChatUser} />
