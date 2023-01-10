@@ -2,9 +2,10 @@ import { useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import { TbLogout } from "react-icons/tb";
 import { BsFillChatSquareFill } from "react-icons/bs";
+import Image from "../../components/Images";
 
 const NavBar = () => {
-    const { user } = useSelector(authSelector);
+    const { user, userIsLoading } = useSelector(authSelector);
     return <div className="basis-20 h-full border-neutral-700 px-1.5">
         <div className="h-full flex flex-col justify-between items-center py-2">
             <div>
@@ -16,12 +17,10 @@ const NavBar = () => {
             </div>
 
             <div className="flex flex-col items-center space-y-4">
-                <button className='h-[40px] px-1 py-1 rounded-full ring-2 ring-dark-placeholder bg-dark-placeholder focus:ring-placeholder'>
-                    <img
-                        src={user?.profilePicture}
-                        className='w-full h-full object-cover'
-                    />
-                </button>
+                <div className="h-[40px] w-[40px]">
+                    <Image source={user?.profilePicture} isLoading={userIsLoading} />
+                </div>
+
                 <button
                     className="h-[40px] w-full rounded-full ring-2 ring-dark-placeholder bg-dark-placeholder focus:ring-placeholder flex justify-center items-center text-placeholder active:bg-placeholder active:text-dark-placeholder"
                 >
