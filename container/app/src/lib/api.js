@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import axios from "axios";
 
-const isProd = () => window.location.hostname !== "localhost";
+export const isProd = () => window.location.hostname !== "localhost";
 
 const api = axios.create({
   headers: {
