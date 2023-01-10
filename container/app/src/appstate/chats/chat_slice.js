@@ -4,7 +4,8 @@ const chatSlice = createSlice({
     name: "chats",
     initialState: {
         chats: [],
-        activeChats: []
+        activeChats: [],
+        isLoading: false
     },
     reducers: {
         addMessage: (state, action) => {
@@ -22,8 +23,16 @@ const chatSlice = createSlice({
             extendedSlice.endpoints.connect.matchFulfilled,
             (state, action) => {
                 state.chats = [...action.payload.data];
+                state.isLoading = false
             }
         );
+        builder.addMatcher(
+            extendedSlice.endpoints.connect.matchPending,
+            (state, action) => {
+                state.isLoading = true
+            }
+        );
+
     },
 });
 export const { addActiveChats, addMessage, addNewMessage } = chatSlice.actions

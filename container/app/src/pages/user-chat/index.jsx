@@ -15,6 +15,8 @@ import { useToast } from "../../components/Toast";
 import { addMessage, chatSelector, addNewMessage, addActiveChats } from "../../appstate/chats/chat_slice"
 import { io } from "socket.io-client";
 import useSocket from "../../lib/useSocket";
+import Loading from "../../components/Loading";
+import Image from "../../components/Images";
 
 // const socket = io('ws://localhost:5900/api/v1/socket', {
 //   withCredentials: true,
@@ -23,7 +25,7 @@ import useSocket from "../../lib/useSocket";
 const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const param = useParams();
   const { user } = useSelector(authSelector);
-  const { chats } = useSelector(chatSelector);
+  const { chats, isLoading: chatLoading } = useSelector(chatSelector);
   const { data: selectedUser, isLoading } = getUser({ id: param.id });
   const scrollRef = useRef(null)
   const { isSuccess } = useConnectQuery({ from: user._id, to: param.id });
@@ -74,16 +76,13 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
       <div className=" h-full flex flex-col justify-between py-2 px-2 overflow-hidden">
         {/* Top Nav */}
         <div className="h-14 w-full border-b border-neutral-700 flex items-center space-x-2 pb-2 px-2">
-          <button className='h-full rounded-full ring-2 ring-dark-placeholder bg-dark-placeholder focus:ring-placeholder'>
-            <img
-              src={selectedUser?.profilePicture}
-              className='w-full h-full object-contain'
-            />
-          </button>
-          <Text isLoading={isLoading} className="font-bold">{selectedUser?.name}</Text>
+          <div className="w-12 h-12 ">
+            <Image source={selectedUser?.profilePicture} isLoading={isLoading} />
+          </div>
+          <Text placeholderClassName="w-48" isLoading={isLoading} className="font-bold">{selectedUser?.name}</Text>
         </div>
         {/* Chat body */}
-        <div className="py-4 h-full flex flex-col gap-4 overflow-y-scroll my-4">
+        {!chatLoading && (<div className="pl-2 py-4 h-full flex flex-col gap-4 overflow-y-scroll my-4">
           {isSuccess === true && chats.length > 0 && chats.map((message, i) => {
             return (
               <div className={classNames(
@@ -112,8 +111,15 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
             )
           })}
           <div ref={scrollRef} />
-        </div>        {/* tools */}
-        <div className="relative flex items-center space-x-2">
+        </div>)
+        }
+        {chatLoading && (
+          <div className="w-full h-full flex justify-center items-center">
+            <Loading className="w-[120px] h-[120px]" />
+          </div>
+        )}
+        {/* tools */}
+        <div className="pl-2 relative flex items-center space-x-2">
           <div className="cursor-pointer text-white rounded-full text-sm px-1 py-1 bg-accent">
             <AiOutlinePlus />
           </div>

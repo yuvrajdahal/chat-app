@@ -5,9 +5,8 @@ import { useNavigate } from 'react-router-dom'
 import Text from '../../components/Text'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../appstate/auth/auth_slice'
-import { useEffect } from 'react';
-import { io } from "socket.io-client";
 import { chatSelector } from '../../appstate/chats/chat_slice'
+import Image from '../../components/Images'
 
 const Users = ({ onChangeChatUser }) => {
   const { userIsLoading, user } = useSelector(authSelector);
@@ -29,41 +28,62 @@ const Users = ({ onChangeChatUser }) => {
   })
   return (
     <>
-      {isLoading && 'loading'}
-      {isSuccess && (
-        <>
-          <Text variant='primary' className="font-bold text-xl pt-2">Chats</Text>
+      <Text variant='primary' className="font-bold text-xl pt-2">Chats</Text>
+      {isSuccess && reMappedOnlineUsers.map((singleUser, i) => {
+        return (
+          <div
+            className={classNames(
+              'w-full py-2 rounded px-2 flex gap-2 cursor-pointer',
+              "border active:border active:border-dark-placeholder",
+              index === i ? "bg-placeholder active:border active:border-white" : ""
+            )}
+            onClick={() => onCardClick(i, singleUser._id)}
+            key={singleUser._id}
+          >
+            <div className="w-[60px] h-[60px]">
+              <Image source={singleUser?.profilePicture} isLoading={isLoading} />
+            </div>
 
-          {reMappedOnlineUsers.map((singleUser, i) => {
-            return (
-              <div
-                className={classNames(
-                  'w-full py-2 rounded px-2 flex gap-2 cursor-pointer',
-                  "border active:border active:border-dark-placeholder",
-                  index === i ? "bg-placeholder active:border active:border-white" : ""
-                )}
-                onClick={() => onCardClick(i, singleUser._id)}
-                key={singleUser._id}
-              >
-                <button className={classNames('w-[60px] h-[60px] rounded-full focus:ring-2',
-                  index === i ? "bg-dark-placeholder " : "bg-placeholder",
-                  index === i ? " focus:ring-dark-placeholder" : " focus:ring-placeholder"
-                )}>
-                  <img
-                    src={singleUser.profilePicture}
-                    className='w-full h-full object-contain'
-                  />
-                </button>
-                <div>
-                  <Text variant='primary'>{singleUser.name}</Text>
-                  {singleUser?.active === true && <Text variant='primary'>Active</Text>}
-                </div>
-              </div>
-            )
-          })}
-        </>
-      )}{' '}
+            <div>
+              <Text variant='primary'>{singleUser.name}</Text>
+              {singleUser?.active === true && <Text variant='primary'>Active</Text>}
+            </div>
+          </div>
+        )
+      })}
+      {isLoading && (
+        <PlaceHolderCards isLoading />
+      )}
+
     </>
   )
 }
 export default Users
+const PlaceHolderCards = ({ isLoading, numberOfCards = 2 }) => {
+  const nullArrayStructure = [...Array(numberOfCards)]
+  return (
+    <>
+      {nullArrayStructure.map((item, i) => {
+        return (
+          <div
+            className={classNames(
+              'w-full py-2 rounded px-2 flex gap-2 cursor-pointer',
+              // "border active:border active:border-dark-placeholder",
+              "bg-placeholder active:border active:border-white"
+            )}
+            key={i}
+          >
+            <div className="w-[60px] h-[60px]">
+              <Image source={""} isLoading />
+            </div>
+
+            <div>
+              <Text variant='primary' placeholderClassName="w-48" isLoading={isLoading}></Text>
+
+            </div>
+          </div>
+        )
+      })}
+    </>
+  )
+}

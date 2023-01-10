@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import { useSendMessageMutation, useUploadImageMutation } from "../../appstate/chats/chat_service";
 import { classNames } from "../../lib/utils";
+import Loading from "../../components/Loading";
 
 const Chats = () => {
   const location = useLocation();
@@ -87,35 +88,50 @@ const Chats = () => {
           <Route
             path={`users/*`}
             element={
-              <Suspense fallback="loading..">
+              <Suspense fallback={
+                <div className="w-full mt-10 flex justify-center items-center">
+                  <Loading />
+                </div>
+              }>
                 <Users onChangeChatUser={onChangeChatUser} />
               </Suspense>
             }
           />
         </Routes>
       </div>
-      {receiver?.length === 0 && <div className='w-full block sm:hidden sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
-        <Routes>
-          <Route
-            path={`users/*`}
-            element={
-              <Suspense fallback="loading..">
-                <Users onChangeChatUser={onChangeChatUser} />
-              </Suspense>
-            }
-          />
-        </Routes>
-      </div>}
+      {receiver?.length === 0 && (
+        <div className='w-full block sm:hidden sm:basis-64 h-full border-x border-neutral-700 px-2 space-y-1.5'>
+          <Routes>
+            <Route
+              path={`users/*`}
+              element={
+                <Suspense fallback={
+                  <div className="w-full mt-10 flex justify-center items-center">
+                    <Loading />
+                  </div>
+                }>
+                  <Users onChangeChatUser={onChangeChatUser} />
+                </Suspense>
+              }
+            />
+          </Routes>
+        </div>
+      )}
       <div className={classNames(
-        "border sm:border-0 w-full h-full text-white",
+        "border-l border-neutral-700 sm:border-0 w-full h-full text-white",
         receiver?.length === 0 && "hidden"
       )}>
         {receiver ? (
+
           <Routes>
             <Route
               path={`users/${receiver}`}
               element={
-                <Suspense fallback={"loading.."}>
+                <Suspense fallback={
+                  <div className="w-full mt-10 flex justify-center items-center">
+                    <Loading />
+                  </div>
+                }>
                   <PrivateChat submitHandler={sendMessageHandler} submitFileHandler={sendFileAsMessageHandler} />
                 </Suspense>
               }

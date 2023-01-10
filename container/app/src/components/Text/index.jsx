@@ -1,4 +1,6 @@
-const Text = ({ variant = "none", className = "", as = "div", isLoading = false, children, ...rest }) => {
+import { classNames } from "../../lib/utils";
+
+const Text = ({ variant = "none", placeholderClassName = "", className = "", as = "div", isLoading = false, children, ...rest }) => {
     const variants = {
         primary: "text-primary",
         none: "",
@@ -12,7 +14,9 @@ const Text = ({ variant = "none", className = "", as = "div", isLoading = false,
                 <Component className={`${classType} ${className}`}{...rest}>
                     {children}
                 </Component >
-                : <div className="h-4 bg-placeholder"></div >
+                : <div className={classNames("h-4 bg-placeholder",
+                    placeholderClassName
+                )}></div >
             }
         </>
     );
