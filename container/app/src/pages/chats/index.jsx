@@ -50,6 +50,11 @@ const Chats = () => {
   }
 
   async function sendMessageHandler(user, to, message) {
+    dispatch(addNewMessage({
+      from: user,
+      to: to,
+      message: message
+    }))
     socket?.emit("send-msg", {
       from: user,
       to: to,
