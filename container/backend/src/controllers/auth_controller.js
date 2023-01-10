@@ -135,7 +135,7 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
     user.emailToken = null;
     user.isVerified = true;
     await user.save();
-    res.redirect("http://localhost:5173/login");
+    res.redirect(process.env.NODE_ENV === "development" ? process.env.DEV_BASE_URL + "/login" : process.env.PROD_BASE_URL + "/login");
   } else {
     return next(new ErrorResponse("Canot find user", 404));
   }
