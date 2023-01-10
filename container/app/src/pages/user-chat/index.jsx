@@ -26,7 +26,7 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const { chats } = useSelector(chatSelector);
   const { data: selectedUser, isLoading } = getUser({ id: param.id });
   const scrollRef = useRef(null)
-  const { data, isSuccess } = useConnectQuery({ from: user._id, to: param.id });
+  const { isSuccess } = useConnectQuery({ from: user._id, to: param.id });
   const [messageToBeSend, setMessage] = useState("")
 
   const [image, setImage] = useState("");

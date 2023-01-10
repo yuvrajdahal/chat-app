@@ -44,16 +44,26 @@ app.use(
     credentials: true,
   })
 );
-app.use("/uploads", express.static(path.resolve("uploads/")));
-
-
-app.get("/", (req, res) => {
-  res.send("Api is running");
-});
 
 app.use("/api/v1/auth", auth);
 app.use("/api/v1/users", users);
 app.use("/api/v1/chat", chat);
+
+
+app.use("/uploads", express.static(path.resolve("uploads/")));
+
+if (process.env.NODE_ENV === 'production') {
+  console.log(__dirname)
+  app.use(express.static(path.resolve('../', 'app', 'dist')))
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve('../', 'app', 'dist', 'index.html'))
+  })
+} else {
+  app.get('/', (req, res) => {
+    res.send('Api is running')
+  })
+}
+
 app.use(globalError);
 
 let PORT = process.env.PORT ?? 5000;

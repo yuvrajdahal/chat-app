@@ -10,11 +10,12 @@ import { addActiveChats, addNewMessage } from "../../appstate/chats/chat_slice";
 import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import { useSendMessageMutation, useUploadImageMutation } from "../../appstate/chats/chat_service";
+import { classNames } from "../../lib/utils";
 
 const Chats = () => {
   const location = useLocation();
   const id = location.pathname.split("/")[3]
-  const [receiver, setReceiver] = useState(id);
+  const [receiver, setReceiver] = useState("");
   const navigate = useNavigate();
 
   const [sendMessage] = useSendMessageMutation();
@@ -24,6 +25,11 @@ const Chats = () => {
   const socket = useSocket();
   const { user, userIsLoading } = useSelector(authSelector);
 
+  // application socket manager
+  useEffect(() => {
+    setReceiver(id);
+    return () => setReceiver("")
+  }, [location])
   useEffect(() => {
     if (!userIsLoading) {
       socket?.emit("add-user", user)
@@ -66,10 +72,11 @@ const Chats = () => {
       message: file
     });
   }
+
   return (
     <div className="w-full h-full flex">
       <NavBar />
-      <div className='basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
+      <div className='w-full hidden sm:block sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
         <Routes>
           <Route
             path={`users/*`}
@@ -81,7 +88,22 @@ const Chats = () => {
           />
         </Routes>
       </div>
-      <div className="w-full h-full text-white">
+      {receiver.length <= 0 && <div className='w-full block sm:hidden sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
+        <Routes>
+          <Route
+            path={`users/*`}
+            element={
+              <Suspense fallback="loading..">
+                <Users onChangeChatUser={onChangeChatUser} />
+              </Suspense>
+            }
+          />
+        </Routes>
+      </div>}
+      <div className={classNames(
+        "border sm:border-0 w-full h-full text-white",
+        receiver.length <= 0 && "hidden"
+      )}>
         {receiver ? (
           <Routes>
             <Route
@@ -94,7 +116,10 @@ const Chats = () => {
             />
           </Routes>
 
-        ) : <Text variant="primary" className="px-2 py-2">No user selected</Text>}
+        ) : (<div className="h-full w-full hidden sm:flex flex-col justify-center items-center">
+          <img src="/assets/nouserrobot-1.gif" />
+          <Text variant="primary" className="relative -top-[40px] text-xl font-bold">No user selected</Text>
+        </div>)}
       </div>
     </div>
   );
