@@ -88,7 +88,7 @@ const Chats = () => {
           />
         </Routes>
       </div>
-      {receiver.length <= 0 && <div className='w-full block sm:hidden sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
+      {receiver && receiver.length <= 0 && <div className='w-full block sm:hidden sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5'>
         <Routes>
           <Route
             path={`users/*`}
@@ -102,7 +102,7 @@ const Chats = () => {
       </div>}
       <div className={classNames(
         "border sm:border-0 w-full h-full text-white",
-        receiver.length <= 0 && "hidden"
+        receiver && receiver.length <= 0 && "hidden"
       )}>
         {receiver ? (
           <Routes>
