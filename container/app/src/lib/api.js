@@ -53,7 +53,7 @@ const axiosBaseQuery =
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: axiosBaseQuery({
-    baseUrl: "http://localhost:5900/api/v1/"
+    baseUrl: "https://chat-app-production-913f.up.railway.app/api/v1/"
   }),
   Types: ["Auth", "Chats", "ChatSocket"],
   endpoints: (builder) => ({}),
