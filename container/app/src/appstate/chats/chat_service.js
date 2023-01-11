@@ -12,23 +12,6 @@ export const extendedSlice = apiSlice.injectEndpoints({
                 return response
             },
             providesTags: ["Chats"],
-            // async onCacheEntryAdded(
-            //     args,
-            //     { dispatch, cacheDataLoaded, cacheEntryRemoved, updateCachedData },
-            // ) {
-            //     try {
-            //         await cacheDataLoaded;
-            //         socket.on("msg-recieve", doc => {
-            //             updateCachedData((draft) => {
-            //                 console.log(doc, draft)
-            //                 dispatch(addMessage(doc))
-            //             })
-            //         })
-            //     } catch {
-            //     }
-            //     socket.off("msg-recieve")
-            //     await cacheEntryRemoved;
-            // },
         }),
         sendMessage: builder.mutation({
             query: (cred) => ({
@@ -40,7 +23,6 @@ export const extendedSlice = apiSlice.injectEndpoints({
                     message: cred.message
                 }
             }),
-            invalidatesTags: ["Chats"],
         }),
         deletMessage: builder.mutation({
             query: ({ id }) => ({

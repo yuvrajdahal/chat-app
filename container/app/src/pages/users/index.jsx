@@ -78,8 +78,7 @@ const PlaceHolderCards = ({ isLoading, numberOfCards = 2 }) => {
             </div>
 
             <div>
-              <Text variant='primary' placeholderClassName="w-48" isLoading={isLoading}></Text>
-
+              <Text variant='primary' placeholderClassName="w-full" isLoading={isLoading}></Text>
             </div>
           </div>
         )
