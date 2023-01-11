@@ -30,6 +30,21 @@ const chatSlice = createSlice({
             }
         );
         builder.addMatcher(
+            extendedSlice.endpoints.refetchChats.matchPending,
+            (state, action) => {
+                state.chats = []
+                state.isLoading = true
+            }
+        );
+
+        builder.addMatcher(
+            extendedSlice.endpoints.refetchChats.matchFulfilled,
+            (state, action) => {
+                state.chats = action.payload.data;
+                state.isLoading = false
+            }
+        );
+        builder.addMatcher(
             extendedSlice.endpoints.connect.matchPending,
             (state, action) => {
                 state.chats = []

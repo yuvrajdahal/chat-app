@@ -7,7 +7,7 @@ import { AiOutlineGif, AiOutlinePlus } from "react-icons/ai";
 import { RiGalleryFill } from "react-icons/ri";
 import { BsFillEmojiSmileFill } from "react-icons/bs";
 import { classNames } from "../../lib/utils"
-import { useConnectQuery, useSendMessageMutation, useUploadImageMutation } from "../../appstate/chats/chat_service"
+import { extendedSlice, useConnectQuery, useSendMessageMutation, useUploadImageMutation } from "../../appstate/chats/chat_service"
 import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import FileInput from "../../components/Input/FileInput";
@@ -17,7 +17,6 @@ import Loading from "../../components/Loading";
 import Image from "../../components/Images";
 import { IoMdSend } from "react-icons/io";
 
-const id = window.location.pathname.split("/")[3]
 const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const param = useParams();
   const [messageToBeSend, setMessage] = useState("")
@@ -27,11 +26,18 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const { user } = useSelector(authSelector);
 
   const { data: selectedUser, isLoading } = getUser({ id: param?.id });
-  const { data, isSuccess } = useConnectQuery({ from: user._id, to: selectedUser?._id });
+  const { refetch, data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
   const { chats, isLoading: chatLoading } = useSelector(chatSelector);
 
   const { add } = useToast();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
+
+  // 2 ta ko req vayepaxi cache ma rakhxa so dont have to fetch 
+  // tara problem k xa vani colide garxa duita ko message kina ki reftech nai
+  // hudaina so chats tya rahanxa 
+  // data.data ma feri aauxa kina ki tyo tah cahce ma xa api ko
+  // khali chats ma access xaina
+  // data.data -> chats 
 
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();

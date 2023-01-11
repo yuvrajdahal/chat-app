@@ -1,22 +1,23 @@
 import { getUsers } from '../../appstate/users/user_service'
 import { useState } from 'react'
 import { classNames } from "../../lib/utils"
-import { useNavigate } from 'react-router-dom'
 import Text from '../../components/Text'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../appstate/auth/auth_slice'
 import { chatSelector } from '../../appstate/chats/chat_slice'
 import Image from '../../components/Images'
-
+import { extendedSlice, useRefetchChatsMutation } from "../../appstate/chats/chat_service"
 const Users = ({ onChangeChatUser }) => {
   const { userIsLoading, user } = useSelector(authSelector);
   const [index, setIndex] = useState(0)
   const { activeChats } = useSelector(chatSelector);
   const { isSuccess, isLoading, data: users, } =
-    getUsers()
+    getUsers();
+  const [refetchChats] = useRefetchChatsMutation();
   function onCardClick(index, id) {
     setIndex(index)
-    onChangeChatUser(id)
+    onChangeChatUser(id);
+    refetchChats({ from: user._id, to: id });
   }
   const onlineUsers = isSuccess && users?.data?.filter(everyUser => {
     return activeChats.filter(activeUser => {

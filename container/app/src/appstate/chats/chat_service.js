@@ -3,7 +3,6 @@ import { io } from "socket.io-client";
 import { apiSlice } from "../../lib/api";
 import { addMessage } from "./chat_slice"
 
-const messagesAdapter = createEntityAdapter()
 export const extendedSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         connect: builder.query({
@@ -12,6 +11,9 @@ export const extendedSlice = apiSlice.injectEndpoints({
                 return response
             },
             providesTags: ["Chats"],
+        }),
+        refetchChats: builder.mutation({
+            query: ({ from, to }) => ({ url: `chat?from=${from}&to=${to}` }),
         }),
         sendMessage: builder.mutation({
             query: (cred) => ({
@@ -48,5 +50,6 @@ export const extendedSlice = apiSlice.injectEndpoints({
 export const {
     useConnectQuery,
     useSendMessageMutation,
-    useUploadImageMutation
+    useUploadImageMutation,
+    useRefetchChatsMutation,
 } = extendedSlice;
