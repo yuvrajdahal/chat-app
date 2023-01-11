@@ -26,18 +26,11 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const { user } = useSelector(authSelector);
 
   const { data: selectedUser, isLoading } = getUser({ id: param?.id });
-  const { refetch, data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
+  const { data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
   const { chats, isLoading: chatLoading } = useSelector(chatSelector);
 
   const { add } = useToast();
   const dispatch = useDispatch()
-
-  // 2 ta ko req vayepaxi cache ma rakhxa so dont have to fetch 
-  // tara problem k xa vani colide garxa duita ko message kina ki reftech nai
-  // hudaina so chats tya rahanxa 
-  // data.data ma feri aauxa kina ki tyo tah cahce ma xa api ko
-  // khali chats ma access xaina
-  // data.data -> chats 
 
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
