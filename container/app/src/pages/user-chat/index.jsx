@@ -12,26 +12,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import FileInput from "../../components/Input/FileInput";
 import { useToast } from "../../components/Toast";
-import { chatSelector } from "../../appstate/chats/chat_slice"
+import { addMessage, addNewMessage, chatSelector, setLoading } from "../../appstate/chats/chat_slice"
 import Loading from "../../components/Loading";
 import Image from "../../components/Images";
 import { IoMdSend } from "react-icons/io";
 
+const id = window.location.pathname.split("/")[3]
 const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const param = useParams();
-  const { user } = useSelector(authSelector);
-  const { chats, isLoading: chatLoading } = useSelector(chatSelector);
-  const { data: selectedUser, isLoading } = getUser({ id: param.id });
-  const scrollRef = useRef(null)
-  const { isSuccess } = useConnectQuery({ from: user._id, to: param.id });
   const [messageToBeSend, setMessage] = useState("")
-
   const [image, setImage] = useState("");
+  const scrollRef = useRef(null)
+
+  const { user } = useSelector(authSelector);
+
+  const { data: selectedUser, isLoading } = getUser({ id: param?.id });
+  const { data, isSuccess } = useConnectQuery({ from: user._id, to: selectedUser?._id });
+  const { chats, isLoading: chatLoading } = useSelector(chatSelector);
+
   const { add } = useToast();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
-  }, [chats])
+  }, [data, chats])
 
   async function sendFileAsMessageHandler() {
     submitFileHandler(user, selectedUser, messageToBeSend)
@@ -76,7 +80,7 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
           userName={selectedUser?.name}
         />
         {/* Chat body */}
-        {isSuccess && chats?.length > 0 && <ChatBody
+        {!chatLoading && <ChatBody
           user={user}
           checkFileOfImage={checkFileOfImage}
           chats={chats}

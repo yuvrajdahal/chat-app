@@ -13,9 +13,8 @@ import { useSendMessageMutation, useUploadImageMutation } from "../../appstate/c
 import { classNames } from "../../lib/utils";
 import Loading from "../../components/Loading";
 
-const id = window.location.pathname.split("/")[3]
-
 const Chats = () => {
+  const id = window.location.pathname.split("/")[3]
   const location = useLocation();
   const [receiver, setReceiver] = useState(id);
   const navigate = useNavigate();
@@ -25,17 +24,15 @@ const Chats = () => {
 
   const dispatch = useDispatch();
   const socket = useSocket();
-  const idRef = useRef(null)
   const { user, userIsLoading } = useSelector(authSelector);
 
   // set and clear id's according to route
   useEffect(() => {
     if (id) {
       setReceiver(id);
-      idRef.current = id
     }
-    return () => setReceiver("")
-  }, [id])
+    return () => setReceiver("");
+  }, [id]);
 
   // application socket manager
   useEffect(() => {
@@ -50,12 +47,6 @@ const Chats = () => {
     }
   }, [socket, user]);
 
-  function onChangeChatUser(id) {
-    setReceiver(id);
-    navigate(`users/${id}`, {
-      state: id
-    });
-  }
   async function sendMessageHandler(user, to, message) {
     if (message?.length === 0) return
     dispatch(addNewMessage({
@@ -90,7 +81,12 @@ const Chats = () => {
       <NavBar />
       {/* Routes to list users */}
       <UsersList
-        onChange={onChangeChatUser}
+        onChange={(id) => {
+          setReceiver(id);
+          navigate(`users/${id}`, {
+            state: id
+          });
+        }}
         receiver={receiver}
       />
       {/* Routes to list user specific chat */}
@@ -104,28 +100,29 @@ const Chats = () => {
 };
 export default Chats;
 const UsersList = ({ onChange, receiver }) => {
-  return (<div className={classNames(
-    'w-full sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5',
-    receiver?.length > 0 ? "hidden sm:block" : "block"
-  )}>
-    <Routes>
-      <Route
-        path={`users/*`}
-        element={
-          <Suspense fallback={
-            <div className="w-full mt-10 flex justify-center items-center">
-              <Loading />
-            </div>
-          }>
-            <Users onChangeChatUser={onChange} />
-          </Suspense>
-        }
-      />
-    </Routes>
-  </div>
+  return (
+    <div className={classNames(
+      'w-full sm:basis-64 h-full border-x border-neutral-700 px-2  space-y-1.5',
+      receiver?.length > 0 ? "hidden sm:block" : "block"
+    )}>
+      <Routes>
+        <Route
+          path={`users/*`}
+          element={
+            <Suspense fallback={
+              <div className="w-full mt-10 flex justify-center items-center">
+                <Loading />
+              </div>
+            }>
+              <Users onChangeChatUser={onChange} />
+            </Suspense>
+          }
+        />
+      </Routes>
+    </div>
   )
 }
-const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
+const UserPrivateChat = ({ receiver = "", submitHandler, submitFileHandler }) => {
   return (
     <div className={classNames(
       "border-l border-neutral-700 sm:border-0 w-full h-full text-white",

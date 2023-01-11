@@ -11,6 +11,9 @@ const chatSlice = createSlice({
         addMessage: (state, action) => {
             state.chats = action.payload
         },
+        setLoading: (state, action) => {
+            state.isLoading = action.payload
+        },
         addNewMessage: (state, action) => {
             state.chats = [...state.chats, action.payload]
         },
@@ -22,20 +25,20 @@ const chatSlice = createSlice({
         builder.addMatcher(
             extendedSlice.endpoints.connect.matchFulfilled,
             (state, action) => {
-                state.chats = [...action.payload.data];
+                state.chats = action.payload.data;
                 state.isLoading = false
             }
         );
         builder.addMatcher(
             extendedSlice.endpoints.connect.matchPending,
             (state, action) => {
+                state.chats = []
                 state.isLoading = true
             }
         );
-
     },
 });
-export const { addActiveChats, addMessage, addNewMessage } = chatSlice.actions
+export const { setLoading, addActiveChats, addMessage, addNewMessage } = chatSlice.actions
 export default chatSlice.reducer;
 const safeSelect = (state) => state;
 export const chatSelector = createSelector(safeSelect, (state) => state.chat);
