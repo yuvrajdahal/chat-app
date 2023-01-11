@@ -12,15 +12,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import FileInput from "../../components/Input/FileInput";
 import { useToast } from "../../components/Toast";
-import { addMessage, chatSelector, addNewMessage, addActiveChats } from "../../appstate/chats/chat_slice"
-import { io } from "socket.io-client";
-import useSocket from "../../lib/useSocket";
+import { chatSelector } from "../../appstate/chats/chat_slice"
 import Loading from "../../components/Loading";
 import Image from "../../components/Images";
-
-// const socket = io('ws://localhost:5900/api/v1/socket', {
-//   withCredentials: true,
-// });
+import { IoMdSend } from "react-icons/io";
 
 const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const param = useParams();
@@ -218,7 +213,7 @@ const ChatTools = ({
         messageSetter={messageSetter}
       />
       <div className="cursor-pointer text-accent rounded-md text-lg px-0.5 py-0.5"
-      ><BsFillEmojiSmileFill onClick={typeof message === "object" ? sendFileAsMessageHandler : sendMessageHandler} /></div>
+      ><IoMdSend onClick={typeof message === "object" ? sendFileAsMessageHandler : sendMessageHandler} /></div>
     </div>
   )
 }

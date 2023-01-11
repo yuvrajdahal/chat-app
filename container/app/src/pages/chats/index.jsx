@@ -57,6 +57,7 @@ const Chats = () => {
     });
   }
   async function sendMessageHandler(user, to, message) {
+    if (message?.length === 0) return
     dispatch(addNewMessage({
       from: user,
       to: to,
