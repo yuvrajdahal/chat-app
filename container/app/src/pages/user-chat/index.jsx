@@ -48,7 +48,6 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   // scrolls to bottom
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
-    console.log(data)
   }, [chats, data])
 
   async function sendFileAsMessageHandler() {
