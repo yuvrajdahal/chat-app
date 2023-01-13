@@ -10,7 +10,9 @@ export const extendedSlice = apiSlice.injectEndpoints({
             providesTags: ["Chats"],
         }),
         refetchChats: builder.mutation({
-            query: ({ from, to }) => ({ url: `chat?from=${from}&to=${to}` }),
+            // query: ({ from, to }) => ({ url: `chat?from=${from}&to=${to}` }),
+            invalidatesTags: ["Chats"],
+
         }),
         sendMessage: builder.mutation({
             query: (cred) => ({

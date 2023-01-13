@@ -14,9 +14,11 @@ const Users = ({ onChangeChatUser }) => {
   const { isSuccess, isLoading, data: users, } =
     getUsers();
   const [refetchChats] = useRefetchChatsMutation();
+  const dispatch = useDispatch();
   function onCardClick(index, id) {
     setIndex(index)
     onChangeChatUser(id);
+    dispatch(extendedSlice.util.invalidateTags(["Chats"]))
   }
   const onlineUsers = isSuccess && users?.data?.filter(everyUser => {
     return activeChats.filter(activeUser => {

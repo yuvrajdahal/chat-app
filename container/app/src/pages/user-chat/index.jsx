@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { getUser } from '../../appstate/users/user_service'
 import Text from "../../components/Text";
 import Input from "../../components/Input"
@@ -36,14 +36,15 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const dispatch = useDispatch()
 
   // switching user reftech
-  useEffect(() => {
-    if (isSuccess) {
-      if (prevUser !== selectedUser?._id) {
-        setPrevUser(param?.id)
-        refetch();
-      }
-    }
-  }, [selectedUser, param])
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     console.log(prevUser)
+  //     if (prevUser !== selectedUser?._id) {
+  //       setPrevUser(param?.id)
+  //       refetch();
+  //     }
+  //   }
+  // }, [selectedUser, param])
 
   // scrolls to bottom
   useEffect(() => {
