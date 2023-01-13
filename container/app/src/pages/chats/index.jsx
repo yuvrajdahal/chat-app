@@ -12,6 +12,7 @@ import { authSelector } from "../../appstate/auth/auth_slice";
 import { useSendMessageMutation, useUploadImageMutation } from "../../appstate/chats/chat_service";
 import { classNames } from "../../lib/utils";
 import Loading from "../../components/Loading";
+import { nanoid } from "@reduxjs/toolkit";
 
 const Chats = () => {
   const id = window.location.pathname.split("/")[3]
@@ -42,7 +43,11 @@ const Chats = () => {
         dispatch(addActiveChats(users))
       });
       socket?.on("msg-recieve", doc => {
-        dispatch(addNewMessage(doc));
+        console.log(doc)
+        dispatch(addNewMessage({
+          _id: nanoid(),
+          ...doc
+        }));
       });
     }
   }, [socket, user]);
@@ -50,6 +55,7 @@ const Chats = () => {
   async function sendMessageHandler(user, to, message) {
     if (message?.length === 0) return
     dispatch(addNewMessage({
+      _id: nanoid(),
       from: user,
       to: to,
       message: message
@@ -69,6 +75,12 @@ const Chats = () => {
     const formData = new FormData();
     await formData.append("image", message);
     const { data: file } = await upload({ file: formData });
+    dispatch(addNewMessage({
+      _id: nanoid(),
+      from: user,
+      to: to,
+      message: file
+    }))
     sendMessage({
       from: user,
       to: to,

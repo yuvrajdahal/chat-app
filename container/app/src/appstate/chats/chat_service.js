@@ -1,15 +1,12 @@
 import { createEntityAdapter } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
 import { apiSlice } from "../../lib/api";
-import { addMessage } from "./chat_slice"
+import { addMessage, messageAdapter, initialState } from "./chat_slice"
 
 export const extendedSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         connect: builder.query({
             query: ({ from, to }) => ({ url: `chat?from=${from}&to=${to}` }),
-            transformResponse(response) {
-                return response
-            },
             providesTags: ["Chats"],
         }),
         refetchChats: builder.mutation({

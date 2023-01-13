@@ -17,7 +17,6 @@ const Users = ({ onChangeChatUser }) => {
   function onCardClick(index, id) {
     setIndex(index)
     onChangeChatUser(id);
-    refetchChats({ from: user._id, to: id });
   }
   const onlineUsers = isSuccess && users?.data?.filter(everyUser => {
     return activeChats.filter(activeUser => {

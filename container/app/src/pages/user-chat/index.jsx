@@ -5,36 +5,47 @@ import Text from "../../components/Text";
 import Input from "../../components/Input"
 import { AiOutlineGif, AiOutlinePlus } from "react-icons/ai";
 import { RiGalleryFill } from "react-icons/ri";
-import { BsFillEmojiSmileFill } from "react-icons/bs";
 import { classNames } from "../../lib/utils"
-import { extendedSlice, useConnectQuery, useSendMessageMutation, useUploadImageMutation } from "../../appstate/chats/chat_service"
-import { useDispatch, useSelector } from "react-redux";
+import { useConnectQuery, useRefetchChatsMutation, } from "../../appstate/chats/chat_service"
+import { useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import FileInput from "../../components/Input/FileInput";
 import { useToast } from "../../components/Toast";
-import { addMessage, addNewMessage, chatSelector, setLoading } from "../../appstate/chats/chat_slice"
+import { chatAdapterSelector, chatSelector } from "../../appstate/chats/chat_slice"
 import Loading from "../../components/Loading";
 import Image from "../../components/Images";
 import { IoMdSend } from "react-icons/io";
 
 const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const param = useParams();
+  const scrollRef = useRef(null);
+
+  const { add } = useToast();
+
   const [messageToBeSend, setMessage] = useState("")
   const [image, setImage] = useState("");
-  const scrollRef = useRef(null)
+  const [prevUser, setPrevUser] = useState(param.id)
 
   const { user } = useSelector(authSelector);
 
   const { data: selectedUser, isLoading } = getUser({ id: param?.id });
-  const { data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
-  const { chats, isLoading: chatLoading } = useSelector(chatSelector);
+  const { refetch, data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
 
-  const { add } = useToast();
-  const dispatch = useDispatch()
+  const chats = useSelector(chatAdapterSelector.selectAll);
+  const { isLoading: chatLoading } = useSelector(chatSelector);
+
+
+  useEffect(() => {
+    if (prevUser !== selectedUser?._id) {
+      refetch();
+      setPrevUser(param.id)
+      console.log("refetch")
+    }
+  }, [selectedUser, param])
 
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
-  }, [data, chats])
+  }, [chats, data])
 
   async function sendFileAsMessageHandler() {
     submitFileHandler(user, selectedUser, messageToBeSend)
