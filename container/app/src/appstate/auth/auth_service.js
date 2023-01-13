@@ -26,6 +26,7 @@ export const extendedSlice = apiSlice.injectEndpoints({
         localStorage.setItem("token", JSON.stringify(res?.token));
         return res;
       },
+      invalidatesTags: ["User"],
       transformErrorResponse: ({ data, status }) => {
         return { ...data };
       },
@@ -35,6 +36,7 @@ export const extendedSlice = apiSlice.injectEndpoints({
         url: "auth/current_user",
         method: "GET"
       }),
+      providesTags: ["User"],
       onQueryStarted: async (arg, { queryFulfilled }) => {
         await queryFulfilled.then(({ data }) => {
           setTimeout(() => {

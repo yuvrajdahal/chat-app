@@ -30,10 +30,9 @@ const Login = () => {
   async function onLoginHandler(e) {
     e.preventDefault();
     const { data } = await loginUser(formState);
-    if (data?.success && !isError) {
+    if (data?.success) {
       navigate("/chats/users")
     };
-
   }
   useEffect(() => {
     if (isError) {

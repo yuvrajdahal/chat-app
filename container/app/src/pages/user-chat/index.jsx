@@ -29,7 +29,7 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const { user } = useSelector(authSelector);
 
   const { data: selectedUser, isLoading, isSuccess } = getUser({ id: param?.id });
-  const { data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
+  const { refetch, data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
 
   const chats = useSelector(chatAdapterSelector.selectAll);
   const { isLoading: chatLoading } = useSelector(chatSelector);
@@ -40,7 +40,7 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
     if (isSuccess) {
       if (prevUser !== selectedUser?._id) {
         setPrevUser(param?.id)
-        dispatch(dispatchMessage(data?.data))
+        refetch();
       }
     }
   }, [selectedUser, param])
@@ -48,6 +48,7 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   // scrolls to bottom
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
+    console.log(data)
   }, [chats, data])
 
   async function sendFileAsMessageHandler() {

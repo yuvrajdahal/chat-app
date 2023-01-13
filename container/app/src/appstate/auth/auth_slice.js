@@ -6,7 +6,12 @@ const authSlice = createSlice({
     userIsLoading: false,
     user: {},
   },
-  reducers: {},
+  reducers: {
+    logOut: (state, action) => {
+      localStorage.clear();
+      state.user = {}
+    }
+  },
   extraReducers: (builder) => {
     builder.addMatcher(
       extendedSlice.endpoints.currentUser.matchPending,
@@ -24,5 +29,6 @@ const authSlice = createSlice({
   },
 });
 export default authSlice.reducer;
+export const { logOut } = authSlice.actions;
 const safeSelect = (state) => state;
 export const authSelector = createSelector(safeSelect, (state) => state.user);
