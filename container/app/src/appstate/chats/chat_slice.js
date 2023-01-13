@@ -31,6 +31,7 @@ const chatSlice = createSlice({
     // },
     reducers: {
         addMessage: messageAdapter.addMany,
+        setMessage: messageAdapter.setAll,
         addNewMessage: (state, action) => {
             state.chats = [...state.chats, action.payload]
         },
@@ -57,7 +58,7 @@ const chatSlice = createSlice({
         );
     },
 });
-export const { setLoading, addActiveChats, addMessage, addNewMessage } = chatSlice.actions
+export const { setMessage, setLoading, addActiveChats, addMessage, addNewMessage } = chatSlice.actions
 export default chatSlice.reducer;
 const safeSelect = (state) => state;
 export const chatSelector = createSelector(safeSelect, (state) => state.chat);

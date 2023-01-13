@@ -7,11 +7,11 @@ import { AiOutlineGif, AiOutlinePlus } from "react-icons/ai";
 import { RiGalleryFill } from "react-icons/ri";
 import { classNames } from "../../lib/utils"
 import { useConnectQuery, useRefetchChatsMutation, } from "../../appstate/chats/chat_service"
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import FileInput from "../../components/Input/FileInput";
 import { useToast } from "../../components/Toast";
-import { chatAdapterSelector, chatSelector } from "../../appstate/chats/chat_slice"
+import { setMessage as dispatchMessage, chatAdapterSelector, chatSelector } from "../../appstate/chats/chat_slice"
 import Loading from "../../components/Loading";
 import Image from "../../components/Images";
 import { IoMdSend } from "react-icons/io";
@@ -24,25 +24,28 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
 
   const [messageToBeSend, setMessage] = useState("")
   const [image, setImage] = useState("");
-  const [prevUser, setPrevUser] = useState(param.id)
+  const [prevUser, setPrevUser] = useState(param?.id)
 
   const { user } = useSelector(authSelector);
 
-  const { data: selectedUser, isLoading } = getUser({ id: param?.id });
-  const { refetch, data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
+  const { data: selectedUser, isLoading, isSuccess } = getUser({ id: param?.id });
+  const { data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
 
   const chats = useSelector(chatAdapterSelector.selectAll);
   const { isLoading: chatLoading } = useSelector(chatSelector);
+  const dispatch = useDispatch()
 
-
+  // switching user reftech
   useEffect(() => {
-    if (prevUser !== selectedUser?._id) {
-      refetch();
-      setPrevUser(param.id)
-      console.log("refetch")
+    if (isSuccess) {
+      if (prevUser !== selectedUser?._id) {
+        setPrevUser(param?.id)
+        dispatch(dispatchMessage(data?.data))
+      }
     }
   }, [selectedUser, param])
 
+  // scrolls to bottom
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
   }, [chats, data])

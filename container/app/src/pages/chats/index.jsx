@@ -43,7 +43,6 @@ const Chats = () => {
         dispatch(addActiveChats(users))
       });
       socket?.on("msg-recieve", doc => {
-        console.log(doc)
         dispatch(addNewMessage({
           _id: nanoid(),
           ...doc
@@ -134,11 +133,10 @@ const UsersList = ({ onChange, receiver }) => {
     </div>
   )
 }
-const UserPrivateChat = ({ receiver = "", submitHandler, submitFileHandler }) => {
+const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
   return (
     <div className={classNames(
       "border-l border-neutral-700 sm:border-0 w-full h-full text-white",
-      receiver?.length === 0 && "hidden"
     )}>
       {receiver?.length > 0 ? (
         <Routes>
