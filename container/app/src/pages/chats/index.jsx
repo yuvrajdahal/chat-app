@@ -135,31 +135,32 @@ const UsersList = ({ onChange, receiver }) => {
 }
 const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
   return (
-    <div className={classNames(
-      "border-l border-neutral-700 sm:border-0 w-full h-full text-white",
-    )}>
+    <>
       {receiver?.length > 0 ? (
-        <Routes>
-          <Route
-            path={`users/${receiver}`}
-            element={
-              <Suspense fallback={
-                <div className="w-full mt-10 flex justify-center items-center">
-                  <Loading />
-                </div>
-              }>
-                <PrivateChat submitHandler={submitHandler} submitFileHandler={submitFileHandler} />
-              </Suspense>
-            }
-          />
-        </Routes>
+        <div className={classNames(
+          "border-l border-neutral-700 sm:border-0 w-full h-full text-white",
+        )}>
+          <Routes>
+            <Route
+              path={`users/${receiver}`}
+              element={
+                <Suspense fallback={
+                  <div className="w-full mt-10 flex justify-center items-center">
+                    <Loading />
+                  </div>
+                }>
+                  <PrivateChat submitHandler={submitHandler} submitFileHandler={submitFileHandler} />
+                </Suspense>
+              }
+            />
+          </Routes>
+        </div>
       ) : (
         <div className="h-full w-full hidden sm:flex flex-col justify-center items-center">
           <img src="/assets/nouserrobot-1.gif" />
           <Text variant="primary" className="relative -top-[40px] text-xl font-bold">No user selected</Text>
         </div>
       )}
-    </div>
-
+    </>
   )
 }
