@@ -30,7 +30,6 @@ export const extendedSlice = apiSlice.injectEndpoints({
                 url: `chat/${id}`,
                 method: "DELETE"
             }),
-            invalidatesTags: ["Chats"]
         }),
 
         uploadImage: builder.mutation({
@@ -51,4 +50,5 @@ export const {
     useSendMessageMutation,
     useUploadImageMutation,
     useRefetchChatsMutation,
+    useDeletMessageMutation
 } = extendedSlice;

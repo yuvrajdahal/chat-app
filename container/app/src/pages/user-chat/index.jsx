@@ -1,20 +1,31 @@
 import { useRef, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { getUser } from '../../appstate/users/user_service'
+import { useParams } from "react-router-dom";
+import { getUser } from "../../appstate/users/user_service";
 import Text from "../../components/Text";
-import Input from "../../components/Input"
-import { AiOutlineGif, AiOutlinePlus } from "react-icons/ai";
+import Input from "../../components/Input";
+import { AiFillDelete, AiOutlineGif, AiOutlinePlus } from "react-icons/ai";
 import { RiGalleryFill } from "react-icons/ri";
-import { classNames } from "../../lib/utils"
-import { useConnectQuery, useRefetchChatsMutation, } from "../../appstate/chats/chat_service"
+
+import { classNames } from "../../lib/utils";
+import {
+  useConnectQuery,
+  useDeletMessageMutation,
+  useRefetchChatsMutation,
+} from "../../appstate/chats/chat_service";
 import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import FileInput from "../../components/Input/FileInput";
 import { useToast } from "../../components/Toast";
-import { setMessage as dispatchMessage, chatAdapterSelector, chatSelector } from "../../appstate/chats/chat_slice"
+import {
+  setMessage as dispatchMessage,
+  chatAdapterSelector,
+  chatSelector,
+  removeMessage,
+} from "../../appstate/chats/chat_slice";
 import Loading from "../../components/Loading";
 import Image from "../../components/Images";
 import { IoMdSend } from "react-icons/io";
+import { nanoid } from "@reduxjs/toolkit";
 
 const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const param = useParams();
@@ -22,48 +33,44 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
 
   const { add } = useToast();
 
-  const [messageToBeSend, setMessage] = useState("")
+  const [messageToBeSend, setMessage] = useState("");
   const [image, setImage] = useState("");
-  const [prevUser, setPrevUser] = useState(param?.id)
+  const [prevUser, setPrevUser] = useState(param?.id);
 
   const { user } = useSelector(authSelector);
 
-  const { data: selectedUser, isLoading, isSuccess } = getUser({ id: param?.id });
-  const { refetch, data } = useConnectQuery({ from: user._id, to: selectedUser?._id });
+  const {
+    data: selectedUser,
+    isLoading,
+    isSuccess,
+  } = getUser({ id: param?.id });
+  const { refetch, data } = useConnectQuery({
+    from: user._id,
+    to: selectedUser?._id,
+  });
 
   const chats = useSelector(chatAdapterSelector.selectAll);
-  const { isLoading: chatLoading } = useSelector(chatSelector);
-  const dispatch = useDispatch()
-
-  // switching user reftech
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     console.log(prevUser)
-  //     if (prevUser !== selectedUser?._id) {
-  //       setPrevUser(param?.id)
-  //       refetch();
-  //     }
-  //   }
-  // }, [selectedUser, param])
+  const { isLoading: chatLoading, isSending } = useSelector(chatSelector);
+  const dispatch = useDispatch();
 
   // scrolls to bottom
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
-  }, [chats, data])
-
+  }, [chats, data]);
+  const [chatIndex, setChatIndex] = useState(null);
   async function sendFileAsMessageHandler() {
-    submitFileHandler(user, selectedUser, messageToBeSend)
-    setImage("")
-    setMessage("")
+    submitFileHandler(user, selectedUser, messageToBeSend);
+    setImage("");
+    setMessage("");
   }
 
-  async function sendMessageHandler() {
-    submitHandler(user, selectedUser, messageToBeSend)
-    setImage("")
-    setMessage("")
+  async function sendMessageHandler(i) {
+    submitHandler(user, selectedUser, messageToBeSend);
+    setImage("");
+    setMessage("");
   }
   function checkFileType(file) {
-    if (typeof file === "string") return false
+    if (typeof file === "string") return false;
     if (!file) return false;
     let fileTypes = ["jpg", "jpeg", "png"];
     let extension = file.name.split(".").pop().toLowerCase();
@@ -76,11 +83,11 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
     reader.onloadend = function (e) {
       setImage(reader.result);
     };
-    return true
+    return true;
   }
   function checkFileOfImage(array = []) {
-    let isFounded = ["jpg", "png", "jpeg"].some(ai => {
-      return array.includes(ai)
+    let isFounded = ["jpg", "png", "jpeg"].some((ai) => {
+      return array.includes(ai);
     });
     return isFounded;
   }
@@ -94,12 +101,15 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
           userName={selectedUser?.name}
         />
         {/* Chat body */}
-        {!chatLoading && <ChatBody
-          user={user}
-          checkFileOfImage={checkFileOfImage}
-          chats={chats}
-          scrollRef={scrollRef}
-        />}
+        {!chatLoading && (
+          <ChatBody
+            user={user}
+            checkFileOfImage={checkFileOfImage}
+            chats={chats}
+            isSending={isSending}
+            scrollRef={scrollRef}
+          />
+        )}
         {chatLoading && (
           <div className="w-full h-full flex justify-center items-center">
             <Loading className="w-[120px] h-[120px]" />
@@ -126,79 +136,140 @@ const ChatHeader = ({ userImage, isLoading, userName }) => {
       <div className="w-12 h-12 ">
         <Image source={userImage} isLoading={isLoading} />
       </div>
-      <Text placeholderClassName="w-48" isLoading={isLoading} className="font-bold">{userName}</Text>
+      <Text
+        placeholderClassName="w-48"
+        isLoading={isLoading}
+        className="font-bold"
+      >
+        {userName}
+      </Text>
     </div>
-
-  )
-}
-const ChatBody = ({ scrollRef, chats, user, checkFileOfImage }) => {
+  );
+};
+const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending, }) => {
+  const [isHover, setHover] = useState({
+    id: null,
+    isHover: false,
+  });
+  const dispatch = useDispatch();
+  const [deleteMessage] = useDeletMessageMutation();
+  function deleteMessageHandler(id) {
+    dispatch(removeMessage(id));
+    deleteMessage({ id: id });
+  }
   return (
-    <div className="pl-2 py-4 h-full flex flex-col gap-4 overflow-y-scroll my-4">
+    <div className="pl-2 py-4 h-full flex flex-col gap-4 overflow-y-scroll my-4"
+    >
       {chats.map((message, i) => {
         return (
-          <div className={classNames(
-            message?.from._id === user._id && "self-end",
-            "flex gap-2 items-center",
-            message?.from._id === user._id && "flex-row-reverse pr-2",
-          )}
+          <div
+            className={classNames(
+              message?.from._id === user._id && "self-end",
+              "flex gap-2 items-center",
+              message?.from._id === user._id && "flex-row-reverse pr-2"
+            )}
             key={i}
+            onMouseEnter={() =>
+              setHover({
+                id: message._id,
+                isHover: true,
+              })
+            }
+            onMouseLeave={() =>
+              setHover({
+                id: message._id,
+                isHover: false,
+              })
+            }
           >
-            <button className='h-10 rounded-full ring-2 ring-dark-placeholder bg-dark-placeholder focus:ring-placeholder'>
+            <button className="h-10 rounded-full ring-2 ring-dark-placeholder bg-dark-placeholder focus:ring-placeholder">
               <img
-                src={message?.from?._id === user._id ? user?.profilePicture : message?.from?.profilePicture}
-                className='w-full h-full object-contain'
+                src={
+                  message?.from?._id === user._id
+                    ? user?.profilePicture
+                    : message?.from?.profilePicture
+                }
+                className="w-full h-full object-contain"
               />
             </button>
-            <div>
+            <div
+              className={classNames(
+                "max-w-[520px] break-words bg-accent",
+                message?.message.length > 60 ? "rounded-md" : "rounded-full"
+              )}
+            >
               {checkFileOfImage(message.message) === true ? (
                 <img
                   className="h-[200px] w-[200px] object-contain cursor-pointer border border-placeholder py-0.5"
                   src={"http://localhost:5900" + message.message}
-                />) : (
-                <Text as={"span"} variant="primary" className="px-4 py-1 m-0.5 bg-accent rounded-full" >{message.message}</Text>
+                />
+              ) : (
+                <Text as={"div"} variant="primary" className="px-4 py-1 m-0.5 text-lg sm:text-base">
+                  {message.message}
+                </Text>
               )}
             </div>
+            {isHover?.id === message?._id && isHover?.isHover == true && message?._id.length !== 10 && (
+              <AiFillDelete
+                className="text-dark-placeholder cursor-pointer hover:text-red-500"
+                onClick={() => {
+                  if (message?._id.length === 10) return
+                  deleteMessageHandler(message?._id);
+                }}
+              />
+            )}
           </div>
-        )
+        );
       })}
+      {/* {isSending && (
+        <Text as="div" variant="primary" className="mt-0.5">Sending</Text>
+      )} */}
+
       <div ref={scrollRef} />
     </div>
-  )
-}
-const ChatInputWithTool = ({ checkFileType, message, image, messageSetter, imageSetter }) => {
+  );
+};
+const ChatInputWithTool = ({
+  checkFileType,
+  message,
+  image,
+  messageSetter,
+  imageSetter,
+  onKeyDown,
+}) => {
   return (
     <div className="w-full relative flex flex col">
-      {
-        checkFileType(message) === true && (
-          <div className="absolute w-full -top-[120px] bg-dark-placeholder rounded-lg outline-none px-4 py-4">
-            <button className="relative w-full h-[80px] cursor-pointer w-[80px]  overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
-              <div className="absolute right-2 rounded-full active:border-2 active:border-primary"
-                onClick={() => {
-                  imageSetter("")
-                  messageSetter("")
-                }}
-              >&#x2717;</div>
-              <img
-                className="h-full w-full object-cover"
-                src={
-                  checkFileType(message) ? image : null
-                }
-              />
-            </button>
-          </div>
-        )
-      }
-      <Input variant="normal" className="h-8 w-full"
+      {checkFileType(message) === true && (
+        <div className="absolute w-full -top-[120px] bg-dark-placeholder rounded-lg outline-none px-4 py-4">
+          <button className="relative w-full h-[80px] cursor-pointer w-[80px]  overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+            <div
+              className="absolute right-2 rounded-full active:border-2 active:border-primary"
+              onClick={() => {
+                imageSetter("");
+                messageSetter("");
+              }}
+            >
+              &#x2717;
+            </div>
+            <img
+              className="h-full w-full object-cover"
+              src={checkFileType(message) ? image : null}
+            />
+          </button>
+        </div>
+      )}
+      <Input
+        variant="normal"
+        className="h-8 w-full"
         value={checkFileType(message) === true ? "" : message}
+        onKeyDown={onKeyDown}
         onChange={(e) => {
-          messageSetter(
-            e.target.value
-          )
+          messageSetter(e.target.value);
         }}
       />
     </div>
-  )
-}
+  );
+};
 const ChatTools = ({
   checkFileType,
   message,
@@ -206,7 +277,7 @@ const ChatTools = ({
   imageSetter,
   messageSetter,
   sendFileAsMessageHandler,
-  sendMessageHandler
+  sendMessageHandler,
 }) => {
   return (
     <div className="pl-2 relative flex items-center space-x-2">
@@ -217,11 +288,12 @@ const ChatTools = ({
         <AiOutlineGif />
       </div>
       <div className="cursor-pointer text-white rounded-md text-lg px-0.5 py-0.5 bg-accent">
-        <FileInput as={RiGalleryFill} onChange={(e) => {
-          messageSetter(
-            e.target.files[0]
-          )
-        }} />
+        <FileInput
+          as={RiGalleryFill}
+          onChange={(e) => {
+            messageSetter(e.target.files[0]);
+          }}
+        />
       </div>
       <ChatInputWithTool
         checkFileType={checkFileType}
@@ -229,9 +301,23 @@ const ChatTools = ({
         image={image}
         imageSetter={imageSetter}
         messageSetter={messageSetter}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            typeof message === "object"
+              ? sendFileAsMessageHandler()
+              : sendMessageHandler();
+          }
+        }}
       />
-      <div className="cursor-pointer text-accent rounded-md text-lg px-0.5 py-0.5"
-      ><IoMdSend onClick={typeof message === "object" ? sendFileAsMessageHandler : sendMessageHandler} /></div>
+      <div className="cursor-pointer text-accent rounded-md text-lg px-0.5 py-0.5">
+        <IoMdSend
+          onClick={
+            typeof message === "object"
+              ? sendFileAsMessageHandler
+              : sendMessageHandler
+          }
+        />
+      </div>
     </div>
-  )
-}
+  );
+};

@@ -4,34 +4,26 @@ import { classNames } from "../../lib/utils"
 import Text from '../../components/Text'
 import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../appstate/auth/auth_slice'
-import { chatSelector } from '../../appstate/chats/chat_slice'
+import { chatSelector, removePreviousChat } from '../../appstate/chats/chat_slice'
 import Image from '../../components/Images'
 import { extendedSlice, useRefetchChatsMutation } from "../../appstate/chats/chat_service"
 const Users = ({ onChangeChatUser }) => {
   const { userIsLoading, user } = useSelector(authSelector);
   const [index, setIndex] = useState(0)
-  const { activeChats } = useSelector(chatSelector);
   const { isSuccess, isLoading, data: users, } =
     getUsers();
-  const [refetchChats] = useRefetchChatsMutation();
   const dispatch = useDispatch();
   function onCardClick(index, id) {
+    dispatch(removePreviousChat())
     setIndex(index)
     onChangeChatUser(id);
     dispatch(extendedSlice.util.invalidateTags(["Chats"]))
   }
-  const onlineUsers = isSuccess && users?.data?.filter(everyUser => {
-    return activeChats.filter(activeUser => {
-      return everyUser._id === activeUser
-    })
-  })
-  const reMappedOnlineUsers = isSuccess && onlineUsers.map(everyOnlineUser => {
-    return { ...everyOnlineUser, active: true }
-  })
+
   return (
     <>
       <Text variant='primary' className="font-bold text-xl pt-2">Chats</Text>
-      {isSuccess && reMappedOnlineUsers.map((singleUser, i) => {
+      {isSuccess && users?.data.map((singleUser, i) => {
         return (
           <div
             className={classNames(
@@ -48,7 +40,6 @@ const Users = ({ onChangeChatUser }) => {
 
             <div>
               <Text variant='primary'>{singleUser.name}</Text>
-              {singleUser?.active === true && <Text variant='primary'>Active</Text>}
             </div>
           </div>
         )

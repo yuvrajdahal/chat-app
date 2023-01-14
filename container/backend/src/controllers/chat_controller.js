@@ -26,7 +26,6 @@ export const getMessages = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 export const createMessage = asyncHandler(async (req, res, next) => {
-    console.log("body", req.body)
     const { from, to, message } = req.body;
     const newMessage = await Chat.create({
         chatUsers: [from, to],
@@ -35,7 +34,8 @@ export const createMessage = asyncHandler(async (req, res, next) => {
         message
     })
     res.status(201).json({
-        success: true
+        success: true,
+        data: newMessage
     })
 })
 /**

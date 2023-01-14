@@ -6,7 +6,7 @@ import Users from "../users/index";
 import Text from "../../components/Text";
 import NavBar from "../../layouts/Nav";
 import useSocket from "../../lib/useSocket";
-import { addActiveChats, addNewMessage } from "../../appstate/chats/chat_slice";
+import { addActiveChats, addNewMessage, updateOne } from "../../appstate/chats/chat_slice";
 import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
 import { useSendMessageMutation, useUploadImageMutation } from "../../appstate/chats/chat_service";
@@ -52,9 +52,10 @@ const Chats = () => {
   }, [socket, user]);
 
   async function sendMessageHandler(user, to, message) {
-    if (message?.length === 0) return
+    if (message?.length === 0) return;
+    const id = nanoid(10)
     dispatch(addNewMessage({
-      _id: nanoid(),
+      _id: id,
       from: user,
       to: to,
       message: message
@@ -64,11 +65,17 @@ const Chats = () => {
       to: to,
       message: message
     });
-    sendMessage({
+    const { data } = await sendMessage({
       from: user,
       to: to,
       message: message
     });
+    dispatch(updateOne({
+      id: id,
+      changes: {
+        _id: data?.data?._id
+      }
+    }))
   }
   async function sendFileAsMessageHandler(user, to, message) {
     const formData = new FormData();
