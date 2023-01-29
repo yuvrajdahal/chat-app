@@ -30,33 +30,39 @@ api.interceptors.response.use(
     return { data: response.data, status: response.status };
   },
   (error) => {
-    return Promise.reject(error.response || error.message);
+    Promise.reject(error.response || error.message);
   }
 );
 
 const axiosBaseQuery =
-  ({ baseUrl } = { baseUrl: '' }) =>
-    async ({ url, method, body, params, headers }) => {
-      try {
-        const result = await api({ url: baseUrl + url, method, data: body, params, headers })
-        return { data: result.data }
-      } catch (axiosError) {
-        let err = axiosError
-        return {
-          error: {
-            status: err.status || err.response?.status,
-            data: err.data || err.response?.data || err.message,
-          },
-        }
-      }
+  ({ baseUrl } = { baseUrl: "" }) =>
+  async ({ url, method, body, params, headers }) => {
+    try {
+      const result = await api({
+        url: baseUrl + url,
+        method,
+        data: body,
+        params,
+        headers,
+      });
+      return { data: result.data };
+    } catch (axiosError) {
+      let err = axiosError;
+      return {
+        error: {
+          status: err.status || err.response?.status,
+          data: err.data || err.response?.data || err.message,
+        },
+      };
     }
+  };
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: axiosBaseQuery({
-    baseUrl: isProd() ? import.meta.env.VITE_PROD_BASE_URL : import.meta.env.VITE_DEV_BASE_URL
+    baseUrl: isProd()
+      ? import.meta.env.VITE_PROD_BASE_URL
+      : import.meta.env.VITE_DEV_BASE_URL,
   }),
   Types: ["Auth", "User", "Chats", "ChatSocket"],
   endpoints: (builder) => ({}),
 });
-
-

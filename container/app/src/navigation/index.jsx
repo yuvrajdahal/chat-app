@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Loading from "../components/Loading";
 import { AuthWrapper } from "./AuthWrapper";
 import { element } from "./routes";
 
@@ -44,7 +45,13 @@ const childrenElement = ({ child }) => {
       path={child.path}
       key={child.path}
       element={
-        <Suspense>
+        <Suspense
+          fallback={
+            <div className="w-full h-full flex justify-center items-center">
+              <Loading className="w-[120px] h-[120px]" />
+            </div>
+          }
+        >
           <AuthCompo />
         </Suspense>
       }

@@ -11,6 +11,7 @@ import {
   useConnectQuery,
   useDeletMessageMutation,
   useRefetchChatsMutation,
+  useUploadImageMutation,
 } from "../../appstate/chats/chat_service";
 import { useDispatch, useSelector } from "react-redux";
 import { authSelector } from "../../appstate/auth/auth_slice";
@@ -35,16 +36,11 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
 
   const [messageToBeSend, setMessage] = useState("");
   const [image, setImage] = useState("");
-  const [prevUser, setPrevUser] = useState(param?.id);
 
   const { user } = useSelector(authSelector);
 
-  const {
-    data: selectedUser,
-    isLoading,
-    isSuccess,
-  } = getUser({ id: param?.id });
-  const { refetch, data } = useConnectQuery({
+  const { data: selectedUser, isLoading } = getUser({ id: param?.id });
+  const { data } = useConnectQuery({
     from: user._id,
     to: selectedUser?._id,
   });
@@ -146,7 +142,7 @@ const ChatHeader = ({ userImage, isLoading, userName }) => {
     </div>
   );
 };
-const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending, }) => {
+const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending }) => {
   const [isHover, setHover] = useState({
     id: null,
     isHover: false,
@@ -158,8 +154,7 @@ const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending, }) => {
     deleteMessage({ id: id });
   }
   return (
-    <div className="pl-2 py-4 h-full flex flex-col gap-4 overflow-y-scroll my-4"
-    >
+    <div className="pl-2 py-4 h-full flex flex-col gap-4 overflow-y-scroll my-4">
       {chats.map((message, i) => {
         return (
           <div
@@ -168,7 +163,7 @@ const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending, }) => {
               "flex gap-2 items-center",
               message?.from._id === user._id && "flex-row-reverse pr-2"
             )}
-            key={i}
+            key={message._id}
             onMouseEnter={() =>
               setHover({
                 id: message._id,
@@ -194,30 +189,37 @@ const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending, }) => {
             </button>
             <div
               className={classNames(
-                "max-w-[520px] break-words bg-accent",
-                message?.message.length > 60 ? "rounded-md" : "rounded-full"
+                "max-w-[520px] break-words ",
+                message?.message.length > 60 ? "rounded-md" : "rounded-full",
+                checkFileOfImage(message?.message) === false && "bg-accent"
               )}
             >
-              {checkFileOfImage(message.message) === true ? (
+              {checkFileOfImage(message?.message) ? (
                 <img
                   className="h-[200px] w-[200px] object-contain cursor-pointer border border-placeholder py-0.5"
-                  src={"http://localhost:5900" + message.message}
+                  src={message.message}
                 />
               ) : (
-                <Text as={"div"} variant="primary" className="px-4 py-1 m-0.5 text-lg sm:text-base">
+                <Text
+                  as={"div"}
+                  variant="primary"
+                  className="px-4 py-1 m-0.5 text-lg sm:text-base"
+                >
                   {message.message}
                 </Text>
               )}
             </div>
-            {isHover?.id === message?._id && isHover?.isHover == true && message?._id.length !== 10 && (
-              <AiFillDelete
-                className="text-dark-placeholder cursor-pointer hover:text-red-500"
-                onClick={() => {
-                  if (message?._id.length === 10) return
-                  deleteMessageHandler(message?._id);
-                }}
-              />
-            )}
+            {isHover?.id === message?._id &&
+              isHover?.isHover == true &&
+              message?._id.length !== 10 && (
+                <AiFillDelete
+                  className="text-dark-placeholder cursor-pointer hover:text-red-500"
+                  onClick={() => {
+                    if (message?._id.length === 10) return;
+                    deleteMessageHandler(message?._id);
+                  }}
+                />
+              )}
           </div>
         );
       })}

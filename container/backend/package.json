@@ -25,6 +25,8 @@
     "morgan": "^1.10.0",
     "nodemailer": "^6.8.0",
     "nodemon": "^2.0.20",
-    "socket.io": "^4.5.4"
+    "socket.io": "^4.5.4",
+    "cloudinary": "^1.33.0",
+    "multer": "^1.4.5-lts.1"
   }
 }

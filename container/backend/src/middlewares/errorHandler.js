@@ -2,7 +2,6 @@ import ErrorResponse from "../utils/ErrorResponse";
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
-  console.log("Error", err);
   if (err.name === "CastError") {
     const message = `Resource not found of id ${err.value}`;
     error = new ErrorResponse(message, 404);
@@ -22,6 +21,7 @@ const errorHandler = (err, req, res, next) => {
   res.status(error.statusCode || 500).json({
     success: false,
     error: error.message || "Server Error",
+    statuscode: error.statusCode || 500
   });
 };
 export default errorHandler;
