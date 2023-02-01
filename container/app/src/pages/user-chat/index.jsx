@@ -193,9 +193,7 @@ const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending }) => {
             </button>
             <div
               className={classNames(
-                "max-w-[120px] sm:max-w-[220px] md:max-w-[320px] break-words ",
-                message?.message.length > 60 ? "rounded-md" : "rounded-full",
-                message?.message.length > 30 && "rounded-md md:rounded-md",
+                "max-w-[120px] sm:max-w-[220px] md:max-w-[320px] break-words rounded-md ",
 
                 checkFileOfImage(message?.message) === false && "bg-accent"
               )}

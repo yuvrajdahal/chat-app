@@ -10,14 +10,16 @@ import ErrorResponse from "../utils/ErrorResponse.js";
  */
 
 export const getUsers = asyncHandler(async (req, res, next) => {
-  const data = res.advanceResults?.data?.filter(user => {
-    return user._id.toString() !== req.user._id.toString() && user.isVerified === true
-
-  })
+  const data = res.advanceResults?.data?.filter((user) => {
+    return (
+      user._id.toString() !== req.user._id.toString() &&
+      user.isVerified === true
+    );
+  });
 
   res.status(201).json({
     ...res.advanceResults,
-    data: data
+    data: data,
   });
 });
 
