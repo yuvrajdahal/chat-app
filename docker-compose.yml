@@ -10,16 +10,13 @@ services:
     volumes:
       - ./container/app/src:/container/app/src/
       - ./container/backend/:/container/backend/
+      - ./node_moudles:/node_moudles
     stdin_open: true
     tty: true
     depends_on:
       - db
-    environment:
-      MONGO_DEV_URL: mongodb://db/chatapp
-      NODE_ENV: development
-      PORT: 5900
-      JWT_SECRET: "secretkeymustnotberevealedatanypoint"
-      JWT_EXPIRE: 30d
+    env_file:
+      - ./backend/src/config/.env
 
   db:
     image: mongo:4.4.6

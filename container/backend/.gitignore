@@ -8,7 +8,7 @@ xavier-backend/config/config.env
 
 # testing
 /coverage
-
+/uploads
 # production
 /build
 

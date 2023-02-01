@@ -3,6 +3,7 @@ xavier-backend/node_modules/
 xavier-backend/config/config.env   
 
 /node_modules
+/uploads
 /.pnp
 .pnp.js
 
