@@ -23,7 +23,6 @@ import { nanoid } from "@reduxjs/toolkit";
 
 const Chats = () => {
   const id = window.location.pathname.split("/")[3];
-  const location = useLocation();
   const [receiver, setReceiver] = useState(id);
   const navigate = useNavigate();
 
@@ -93,26 +92,17 @@ const Chats = () => {
     const formData = new FormData();
     await formData.append("image", message);
     const id = nanoid();
-    let prev = id;
-    dispatch(
-      addNewMessage({
-        _id: id,
-        from: user,
-        to: to,
-        message: "uploading",
-      })
-    );
+    // dispatch(
+    //   addNewMessage({
+    // _id: id,
+    // from: user,
+    // to: to,
+    // message: "uploading",
+    //   })
+    // );
     const { data } = await upload({ file: formData });
     let newId = nanoid();
-    dispatch(
-      updateOne({
-        id: id,
-        changes: {
-          _id: newId,
-          message: data?.data?.url,
-        },
-      })
-    );
+
     const { data: messageRes } = await sendMessage({
       from: user,
       to: to,
@@ -120,13 +110,19 @@ const Chats = () => {
       cloud_id: data.data?.id,
     });
     dispatch(
-      updateOne({
-        id: newId,
-        changes: {
-          _id: messageRes?.data?._id,
-        },
+      addNewMessage({
+        _id: messageRes?.data?._id,
+        from: user,
+        to: to,
+        message: data?.data?.url,
       })
     );
+  }
+  function onUserChange(id) {
+    setReceiver(id);
+    navigate(`users/${id}`, {
+      state: id,
+    });
   }
   return (
     <div className="w-full h-full flex">
@@ -135,10 +131,7 @@ const Chats = () => {
       {/* Routes to list users */}
       <UsersList
         onChange={(id) => {
-          setReceiver(id);
-          navigate(`users/${id}`, {
-            state: id,
-          });
+          onUserChange(id);
         }}
         receiver={receiver}
       />
@@ -163,17 +156,7 @@ const UsersList = ({ onChange, receiver }) => {
       <Routes>
         <Route
           path={`users/*`}
-          element={
-            <Suspense
-              fallback={
-                <div className="w-full mt-10 flex justify-center items-center">
-                  <Loading />
-                </div>
-              }
-            >
-              <Users onChangeChatUser={onChange} />
-            </Suspense>
-          }
+          element={<Users onChangeChatUser={onChange} />}
         />
       </Routes>
     </div>

@@ -29,11 +29,6 @@ const Signup = () => {
     e.preventDefault();
     signup(formState);
   }
-  useEffect(() => {
-    if (isError) {
-      add.error(error.error ? error.error : error.message);
-    }
-  }, [error, isError]);
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center py-2">

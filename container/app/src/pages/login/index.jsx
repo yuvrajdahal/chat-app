@@ -2,9 +2,7 @@ import Link from "../../components/Button/LinkButton";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
 import { useState } from "react";
-import {
-  useLoginMutation,
-} from "../../appstate/auth/auth_service";
+import { useLoginMutation } from "../../appstate/auth/auth_service";
 import { useNavigate, redirect } from "react-router-dom";
 import { useEffect } from "react";
 import { useToast } from "../../components/Toast";
@@ -31,14 +29,9 @@ const Login = () => {
     e.preventDefault();
     const { data } = await loginUser(formState);
     if (data?.success) {
-      navigate("/chats/users")
-    };
-  }
-  useEffect(() => {
-    if (isError) {
-      add.error(error.error ? error.error : error.message);
+      navigate("/chats/users");
     }
-  }, [error, isError]);
+  }
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center py-2">

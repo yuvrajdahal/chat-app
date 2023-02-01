@@ -30,7 +30,9 @@ api.interceptors.response.use(
     return { data: response.data, status: response.status };
   },
   (error) => {
-    Promise.reject(error.response || error.message);
+    return Promise.reject(
+      error.response || error.message || "Something went wrong!"
+    );
   }
 );
 

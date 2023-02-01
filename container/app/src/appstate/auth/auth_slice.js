@@ -9,8 +9,9 @@ const authSlice = createSlice({
   reducers: {
     logOut: (state, action) => {
       localStorage.clear();
-      state.user = {}
-    }
+      state.user = {};
+      localStorage.clear();
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(

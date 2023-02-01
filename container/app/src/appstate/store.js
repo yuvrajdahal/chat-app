@@ -1,25 +1,30 @@
 import { apiSlice } from "../lib/api";
 import { configureStore } from "@reduxjs/toolkit";
-import UserReducer from "./auth/auth_slice";
+import UserReducer, { logOut } from "./auth/auth_slice";
 import ChatReducer from "./chats/chat_slice";
-import { isRejectedWithValue } from '@reduxjs/toolkit'
-
+import { isRejectedWithValue } from "@reduxjs/toolkit";
+import ErrorReducer, { addError } from "./error/error_slice";
 export const rtkQueryErrorLogger = (api) => (next) => (action) => {
-  // RTK Query uses `createAsyncThunk` from redux-toolkit under the hood, so we're able to utilize these matchers!
   if (isRejectedWithValue(action)) {
-    console.warn('We got a rejected action!')
-
+    if (action?.payload?.statuscode === 401) {
+      store.dispatch(logOut());
+    }
+    store.dispatch(addError(action.payload.error));
   }
 
-  return next(action)
-}
+  return next(action);
+};
+
 const store = configureStore({
   reducer: {
     [apiSlice.reducerPath]: apiSlice.reducer,
     user: UserReducer,
-    chat: ChatReducer
+    chat: ChatReducer,
+    error: ErrorReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware()
+      .concat(apiSlice.middleware)
+      .concat(rtkQueryErrorLogger),
 });
 export default store;

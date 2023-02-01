@@ -2,19 +2,27 @@ import { getUsers } from "../../appstate/users/user_service";
 import { useState } from "react";
 import { classNames } from "../../lib/utils";
 import Text from "../../components/Text";
-import { useDispatch } from "react-redux";
-import { removePreviousChat } from "../../appstate/chats/chat_slice";
+import { useDispatch, useSelector } from "react-redux";
+import { removeAll, removePreviousChat } from "../../appstate/chats/chat_slice";
 import Image from "../../components/Images";
-import { extendedSlice } from "../../appstate/chats/chat_service";
+import {
+  extendedSlice,
+  useRefetchChatsMutation,
+} from "../../appstate/chats/chat_service";
+import store from "../../appstate/store";
+import { authSelector } from "../../appstate/auth/auth_slice";
 const Users = ({ onChangeChatUser }) => {
   const [index, setIndex] = useState(0);
   const { isSuccess, isLoading, data: users } = getUsers();
+  const { user } = useSelector(authSelector);
   const dispatch = useDispatch();
+  const [refetchChats] = useRefetchChatsMutation();
   function onCardClick(index, id) {
     dispatch(removePreviousChat());
     setIndex(index);
     onChangeChatUser(id);
-    dispatch(extendedSlice.util.invalidateTags(["Chats"]));
+    refetchChats({ from: user?._id, to: id });
+    // dispatch(extendedSlice.util.invalidateTags(["Chats"]));
   }
 
   return (

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { getUser } from "../../appstate/users/user_service";
 import Text from "../../components/Text";
 import Input from "../../components/Input";
@@ -8,6 +8,7 @@ import { RiGalleryFill } from "react-icons/ri";
 
 import { classNames } from "../../lib/utils";
 import {
+  extendedSlice,
   useConnectQuery,
   useDeletMessageMutation,
   useRefetchChatsMutation,
@@ -22,6 +23,7 @@ import {
   chatAdapterSelector,
   chatSelector,
   removeMessage,
+  removeAll,
 } from "../../appstate/chats/chat_slice";
 import Loading from "../../components/Loading";
 import Image from "../../components/Images";
@@ -38,22 +40,23 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   const [image, setImage] = useState("");
 
   const { user } = useSelector(authSelector);
+  const id = window.location.pathname.split("/")[3];
 
-  const { data: selectedUser, isLoading } = getUser({ id: param?.id });
   const { data } = useConnectQuery({
     from: user._id,
-    to: selectedUser?._id,
+    to: id,
   });
-
+  const { data: selectedUser, isLoading } = getUser({ id: param?.id });
   const chats = useSelector(chatAdapterSelector.selectAll);
   const { isLoading: chatLoading, isSending } = useSelector(chatSelector);
   const dispatch = useDispatch();
 
   // scrolls to bottom
+
   useEffect(() => {
     scrollRef?.current?.scrollIntoView();
   }, [chats, data]);
-  const [chatIndex, setChatIndex] = useState(null);
+
   async function sendFileAsMessageHandler() {
     submitFileHandler(user, selectedUser, messageToBeSend);
     setImage("");
@@ -87,6 +90,7 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
     });
     return isFounded;
   }
+
   return (
     <>
       <div className=" h-full flex flex-col justify-between py-2 px-2 overflow-hidden">
