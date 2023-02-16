@@ -21,20 +21,6 @@ export const initialState = messageAdapter.getInitialState({
 const chatSlice = createSlice({
   name: "chat",
   initialState: initialState,
-  // reducers: {
-  //     addMessage: (state, action) => {
-  //         state.chats = action.payload
-  //     },
-  //     setLoading: (state, action) => {
-  //         state.isLoading = action.payload
-  //     },
-  //     addNewMessage: (state, action) => {
-  //         state.chats = [...state.chats, action.payload]
-  //     },
-  //     addActiveChats: (state, action) => {
-  //         state.activeChats = (action.payload)
-  //     }
-  // },
   reducers: {
     addMessage: messageAdapter.addMany,
     setMessage: messageAdapter.setAll,
@@ -77,20 +63,6 @@ const chatSlice = createSlice({
       (state, action) => {
         state.isLoading = false;
         messageAdapter.setAll(state, action.payload.data);
-      }
-    );
-
-    // send-message
-    builder.addMatcher(
-      extendedSlice.endpoints.sendMessage.matchPending,
-      (state, action) => {
-        state.isSending = true;
-      }
-    );
-    builder.addMatcher(
-      extendedSlice.endpoints.sendMessage.matchFulfilled,
-      (state, action) => {
-        state.isSending = false;
       }
     );
   },

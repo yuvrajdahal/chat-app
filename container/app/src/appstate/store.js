@@ -23,7 +23,9 @@ const store = configureStore({
     error: ErrorReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
+    getDefaultMiddleware({
+      serializableCheck: false,
+    })
       .concat(apiSlice.middleware)
       .concat(rtkQueryErrorLogger),
 });

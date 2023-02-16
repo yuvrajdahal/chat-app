@@ -20,6 +20,7 @@ import {
 import { classNames } from "../../lib/utils";
 import Loading from "../../components/Loading";
 import { nanoid } from "@reduxjs/toolkit";
+import store from "../../appstate/store";
 
 const Chats = () => {
   const id = window.location.pathname.split("/")[3];
@@ -32,6 +33,7 @@ const Chats = () => {
   const dispatch = useDispatch();
   const socket = useSocket();
   const { user, userIsLoading } = useSelector(authSelector);
+
   // set and clear id's according to route
   useEffect(() => {
     if (id) {
@@ -91,30 +93,35 @@ const Chats = () => {
   async function sendFileAsMessageHandler(user, to, message) {
     const formData = new FormData();
     await formData.append("image", message);
-    const id = nanoid();
-    // dispatch(
-    //   addNewMessage({
-    // _id: id,
-    // from: user,
-    // to: to,
-    // message: "uploading",
-    //   })
-    // );
-    const { data } = await upload({ file: formData });
-    let newId = nanoid();
 
-    const { data: messageRes } = await sendMessage({
-      from: user,
-      to: to,
-      message: data.data?.url,
-      cloud_id: data.data?.id,
-    });
+    let id = nanoid();
+    let buffer = await message.arrayBuffer();
     dispatch(
       addNewMessage({
-        _id: messageRes?.data?._id,
+        _id: id,
         from: user,
         to: to,
-        message: data?.data?.url,
+        message: buffer,
+      })
+    );
+    socket?.emit("send-msg", {
+      from: user,
+      to: to,
+      message: message,
+    });
+    const { data } = await upload({ file: formData });
+    const { data: msgData } = await sendMessage({
+      from: user,
+      to: to,
+      message: data?.data?.url,
+      cloud_id: data?.data?.id,
+    });
+    dispatch(
+      updateOne({
+        id: id,
+        changes: {
+          _id: msgData?.data?._id,
+        },
       })
     );
   }
@@ -136,6 +143,7 @@ const Chats = () => {
         receiver={receiver}
       />
       {/* Routes to list user specific chat */}
+
       <UserPrivateChat
         receiver={receiver}
         submitFileHandler={sendFileAsMessageHandler}
@@ -175,18 +183,10 @@ const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
             <Route
               path={`users/${receiver}`}
               element={
-                <Suspense
-                  fallback={
-                    <div className="w-full mt-10 flex justify-center items-center">
-                      <Loading />
-                    </div>
-                  }
-                >
-                  <PrivateChat
-                    submitHandler={submitHandler}
-                    submitFileHandler={submitFileHandler}
-                  />
-                </Suspense>
+                <PrivateChat
+                  submitHandler={submitHandler}
+                  submitFileHandler={submitFileHandler}
+                />
               }
             />
           </Routes>

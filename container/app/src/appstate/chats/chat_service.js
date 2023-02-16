@@ -41,7 +41,6 @@ export const extendedSlice = apiSlice.injectEndpoints({
           "Content-Type": "multipart/form-data",
         },
       }),
-      invalidatesTags: ["Chats"],
     }),
   }),
 });
