@@ -144,11 +144,25 @@ const Chats = () => {
       />
       {/* Routes to list user specific chat */}
 
-      <UserPrivateChat
-        receiver={receiver}
-        submitFileHandler={sendFileAsMessageHandler}
-        submitHandler={sendMessageHandler}
-      />
+      {receiver?.length > 0 && (
+        <UserPrivateChat
+          key={receiver}
+          receiver={receiver}
+          submitFileHandler={sendFileAsMessageHandler}
+          submitHandler={sendMessageHandler}
+        />
+      )}
+      {receiver?.length === 0 && (
+        <div className="h-full w-full hidden sm:flex flex-col justify-center items-center">
+          <img src="/assets/nouserrobot-1.gif" />
+          <Text
+            variant="primary"
+            className="relative -top-[40px] text-xl font-bold"
+          >
+            No user selected
+          </Text>
+        </div>
+      )}
     </div>
   );
 };
@@ -172,36 +186,22 @@ const UsersList = ({ onChange, receiver }) => {
 };
 const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
   return (
-    <>
-      {receiver?.length > 0 ? (
-        <div
-          className={classNames(
-            "border-l border-neutral-700 sm:border-0 w-full h-full text-white"
-          )}
-        >
-          <Routes>
-            <Route
-              path={`users/${receiver}`}
-              element={
-                <PrivateChat
-                  submitHandler={submitHandler}
-                  submitFileHandler={submitFileHandler}
-                />
-              }
-            />
-          </Routes>
-        </div>
-      ) : (
-        <div className="h-full w-full hidden sm:flex flex-col justify-center items-center">
-          <img src="/assets/nouserrobot-1.gif" />
-          <Text
-            variant="primary"
-            className="relative -top-[40px] text-xl font-bold"
-          >
-            No user selected
-          </Text>
-        </div>
+    <div
+      className={classNames(
+        "border-l border-neutral-700 sm:border-0 w-full h-full text-white"
       )}
-    </>
+    >
+      <Routes>
+        <Route
+          path={`users/${receiver}`}
+          element={
+            <PrivateChat
+              submitHandler={submitHandler}
+              submitFileHandler={submitFileHandler}
+            />
+          }
+        />
+      </Routes>
+    </div>
   );
 };
