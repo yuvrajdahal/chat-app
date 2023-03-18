@@ -11,6 +11,7 @@ import {
 } from "../../appstate/chats/chat_service";
 import store from "../../appstate/store";
 import { authSelector } from "../../appstate/auth/auth_slice";
+
 const Users = ({ onChangeChatUser }) => {
   const [index, setIndex] = useState(0);
   const { isSuccess, isLoading, data: users } = getUsers();
@@ -22,9 +23,8 @@ const Users = ({ onChangeChatUser }) => {
     setIndex(index);
     onChangeChatUser(id);
     refetchChats({ from: user?._id, to: id });
-    // dispatch(extendedSlice.util.invalidateTags(["Chats"]));
   }
-
+  const paramId = window.location.pathname.split("/")[3];
   return (
     <>
       <Text variant="primary" className="font-bold text-xl pt-2">
@@ -37,9 +37,8 @@ const Users = ({ onChangeChatUser }) => {
               className={classNames(
                 "w-full py-2 rounded px-2 flex gap-2 cursor-pointer",
                 "border active:border active:border-dark-placeholder",
-                index === i
-                  ? "bg-placeholder active:border active:border-white"
-                  : ""
+                paramId === singleUser._id &&
+                  "bg-placeholder active:border active:border-white"
               )}
               onClick={() => onCardClick(i, singleUser._id)}
               key={singleUser._id}
