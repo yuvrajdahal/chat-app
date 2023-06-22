@@ -30,7 +30,7 @@ const Users = ({ onChangeChatUser }) => {
       <Text variant="primary" className="font-bold text-xl pt-2">
         Chats
       </Text>
-      {users?.data.length === 0 && (
+      {users?.data.length <= 1 && (
         <div
           className={classNames(
             "w-full py-4 rounded px-2 flex gap-2 cursor-pointer ",
