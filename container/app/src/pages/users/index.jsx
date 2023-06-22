@@ -30,7 +30,20 @@ const Users = ({ onChangeChatUser }) => {
       <Text variant="primary" className="font-bold text-xl pt-2">
         Chats
       </Text>
-      {isSuccess &&
+      {users?.data.length === 0 && (
+        <div
+          className={classNames(
+            "w-full py-4 rounded px-2 flex gap-2 cursor-pointer ",
+            "border active:border active:border-dark-placeholder",
+            "flex justfify-center items-center "
+          )}
+        >
+          <div>
+            <Text variant="primary">No Users</Text>
+          </div>
+        </div>
+      )}
+      {/* {isSuccess &&
         users?.data.map((singleUser, i) => {
           return (
             <div
@@ -55,7 +68,7 @@ const Users = ({ onChangeChatUser }) => {
               </div>
             </div>
           );
-        })}
+        })} */}
       {isLoading && <PlaceHolderCards isLoading />}
     </>
   );
