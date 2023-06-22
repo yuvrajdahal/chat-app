@@ -23,10 +23,45 @@ export const register = asyncHandler(async (req, res, next) => {
   let mailOptions = {
     email: user.email,
     subject: "Test verify email ",
-    html: `<h2>${user.name} Thanks for catchin up to our site</h2>
-      <h4>Please verify your email</h4>
-      <a href="http://${req.headers.host}/api/v1/auth/verify_email?token=${user.emailToken}">Veriy email</a>
-    `,
+    html: `<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolumn Na - Email Verification</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+  <div class="max-w-2xl mx-auto p-4">
+    <div class="bg-white shadow rounded-lg p-8">
+      <h2 class="text-3xl font-bold mb-4">${user.name}, Thanks for catching up to our site!</h2>
+      <h4 class="text-lg font-semibold mb-6">Please verify your email</h4>
+      <p class="mb-4">
+        Welcome to Bolumn Na! We're excited to have you on board. To complete your registration, please click the
+        button below to verify your email address.
+      </p>
+      <a href="http://${req.headers.host}/api/v1/auth/verify_email?token=${user.emailToken}"
+        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+        Verify Email
+      </a>
+      <p class="mt-6 text-gray-500 text-sm">
+        If the button doesn't work, you can also copy and paste the following link into your web browser:
+      </p>
+      <p class="text-gray-500 text-sm mb-2">
+        <a href="http://${req.headers.host}/api/v1/auth/verify_email?token=${user.emailToken}"
+          class="text-blue-500">${req.headers.host}/api/v1/auth/verify_email?token=${user.emailToken}</a>
+      </p>
+      <p class="text-gray-500 text-sm">
+        If you didn't sign up for an account on Bolumn Na, please disregard this email.
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>
+ `,
   };
   sendEmail(mailOptions)
     .then(() => {

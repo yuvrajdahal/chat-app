@@ -8,12 +8,12 @@ const sendEmail = async (options) => {
     auth: {
       // user: process.env.SMTP_EMAIL,
       // pass: process.env.SMTP_PASSWORD,
-      user: "xeicinstitute@gmail.com",
-      pass: "xdoiilopsumjvfiw",
+      user: process.env.SMTPMAIL,
+      pass: process.env.SMTPMAILPASS,
     },
   });
   const message = {
-    from: options.from ? options.from : `XIEC <xeicinstitute@gmail.com>`,
+    from: options.from ? options.from : `Bolumna <${process.env.SMTPMAIL}>`,
     to: options.email,
     subject: options.subject,
     text: options.message,

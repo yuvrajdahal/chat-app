@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: "."
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile.prod
     ports:
       - "5173:5173"
       - "5900:5900"
@@ -16,7 +16,7 @@ services:
     depends_on:
       - db
     env_file:
-      - ./backend/src/config/.env
+      - ./container/backend/src/config/.env
 
   db:
     image: mongo:4.4.6
