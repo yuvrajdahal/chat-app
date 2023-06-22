@@ -21,19 +21,24 @@ import { classNames } from "../../lib/utils";
 import Loading from "../../components/Loading";
 import { nanoid } from "@reduxjs/toolkit";
 import store from "../../appstate/store";
+import CallTab from "../call";
 
 const Chats = () => {
   const id = window.location.pathname.split("/")[3];
-  const [receiver, setReceiver] = useState(id);
+  const _callId = window.location.pathname.split("/")[4];
+  const [receiver, setReceiver] = useState(id ?? "");
+  const [callId, setCallId] = useState(_callId);
+  const [recievedVideoBuffer, setRecievedBuffer] = useState([]);
+
   const navigate = useNavigate();
 
   const [sendMessage] = useSendMessageMutation();
   const [upload] = useUploadImageMutation();
 
   const dispatch = useDispatch();
+
   const socket = useSocket();
   const { user, userIsLoading } = useSelector(authSelector);
-
   // set and clear id's according to route
   useEffect(() => {
     if (id) {
@@ -41,6 +46,13 @@ const Chats = () => {
     }
     return () => setReceiver("");
   }, [id]);
+
+  useEffect(() => {
+    if (_callId) {
+      setCallId(_callId);
+    }
+    return () => setCallId("");
+  }, [_callId]);
 
   // application socket manager
   useEffect(() => {
@@ -125,6 +137,7 @@ const Chats = () => {
       })
     );
   }
+
   function onUserChange(id) {
     setReceiver(id);
     navigate(`users/${id}`, {
@@ -144,25 +157,19 @@ const Chats = () => {
       />
       {/* Routes to list user specific chat */}
 
-      {receiver?.length > 0 && (
-        <UserPrivateChat
-          key={receiver}
-          receiver={receiver}
-          submitFileHandler={sendFileAsMessageHandler}
-          submitHandler={sendMessageHandler}
-        />
+      {receiver?.length > 0 &&
+        (callId?.length === 0 || callId?.length === undefined) && (
+          <UserPrivateChat
+            key={receiver}
+            receiver={receiver}
+            submitFileHandler={sendFileAsMessageHandler}
+            submitHandler={sendMessageHandler}
+          />
+        )}
+      {callId?.length > 0 && (
+        <VideoCallTab receiver={receiver} callId={callId} />
       )}
-      {receiver?.length === 0 && (
-        <div className="h-full w-full hidden sm:flex flex-col justify-center items-center">
-          <img src="/assets/nouserrobot-1.gif" />
-          <Text
-            variant="primary"
-            className="relative -top-[40px] text-xl font-bold"
-          >
-            No user selected
-          </Text>
-        </div>
-      )}
+      {receiver.length === 0 && <NoUserSelected />}
     </div>
   );
 };
@@ -202,6 +209,37 @@ const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
           }
         />
       </Routes>
+    </div>
+  );
+};
+const VideoCallTab = ({ receiver, callId, userJoinCallHandler }) => {
+  return (
+    <div
+      className={classNames(
+        "border-l border-neutral-700 sm:border-0 w-full h-full text-white"
+      )}
+    >
+      <Routes>
+        <Route
+          path={`users/${receiver}/${callId}`}
+          element={<CallTab userJoinCallHandler={userJoinCallHandler} />}
+        />
+      </Routes>
+    </div>
+  );
+};
+const NoUserSelected = () => {
+  return (
+    <div className="h-full w-full hidden sm:flex flex-col justify-center items-center">
+      <div className="h-[300px] w-[300px] my-8">
+        <img src="/assets/nouserrobot-1.gif" className="h-full w-full" />
+      </div>
+      <Text
+        variant="primary"
+        className="relative -top-[40px] text-xl font-bold mt-2"
+      >
+        No user selected
+      </Text>
     </div>
   );
 };

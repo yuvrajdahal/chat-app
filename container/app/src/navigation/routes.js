@@ -37,6 +37,13 @@ export const element = [
                 path: ":id",
                 element: lazyLoad("user-chat"),
                 name: "Chat",
+                children: [
+                  {
+                    path: ":call_id",
+                    element: lazyLoad("call"),
+                    name: "Call Tab",
+                  },
+                ],
               },
             ],
           },

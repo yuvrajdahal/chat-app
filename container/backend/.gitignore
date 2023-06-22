@@ -12,6 +12,7 @@ xavier-backend/config/config.env
 # production
 /tmp
 /build
+tmp
 
 # misc
 .DS_Store

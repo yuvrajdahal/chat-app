@@ -7,9 +7,10 @@ xavier-backend/config/config.env
 /tmp
 /.pnp
 .pnp.js
-
+tmp
 # testing
 /coverage
+tmp
 
 # production
 /build

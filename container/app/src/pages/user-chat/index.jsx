@@ -3,7 +3,12 @@ import { useLocation, useParams } from "react-router-dom";
 import { getUser } from "../../appstate/users/user_service";
 import Text from "../../components/Text";
 import Input from "../../components/Input";
-import { AiFillDelete, AiOutlineGif, AiOutlinePlus } from "react-icons/ai";
+import {
+  AiFillDelete,
+  AiFillVideoCamera,
+  AiOutlineGif,
+  AiOutlinePlus,
+} from "react-icons/ai";
 import { RiGalleryFill } from "react-icons/ri";
 
 import { classNames } from "../../lib/utils";
@@ -30,7 +35,11 @@ import Image from "../../components/Images";
 import { IoMdSend } from "react-icons/io";
 import { nanoid } from "@reduxjs/toolkit";
 
-const PrivateChat = ({ submitHandler, submitFileHandler }) => {
+const PrivateChat = ({
+  submitHandler,
+  submitFileHandler,
+  handleStartRecording,
+}) => {
   const param = useParams();
   const scrollRef = useRef(null);
 
@@ -101,6 +110,8 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
           isLoading={isLoading}
           userImage={selectedUser?.profilePicture}
           userName={selectedUser?.name}
+          handleStartRecording={handleStartRecording}
+          chatId={id}
         />
         {/* Chat body */}
         {!chatLoading && (
@@ -132,19 +143,36 @@ const PrivateChat = ({ submitHandler, submitFileHandler }) => {
   );
 };
 export default PrivateChat;
-const ChatHeader = ({ userImage, isLoading, userName }) => {
+const ChatHeader = ({
+  userImage,
+  isLoading,
+  userName,
+  chatId,
+  handleStartRecording,
+}) => {
   return (
-    <div className="h-14 w-full border-b border-neutral-700 flex items-center space-x-2 pb-2 px-2">
-      <div className="w-12 h-12 ">
-        <Image source={userImage} isLoading={isLoading} />
+    <div className="flex items-center justify-between pr-6">
+      <div className="h-14 w-full border-b border-neutral-700 flex items-center space-x-2 pb-2 px-2">
+        <div className="w-12 h-12 ">
+          <Image source={userImage} isLoading={isLoading} />
+        </div>
+        <Text
+          placeholderClassName="w-48"
+          isLoading={isLoading}
+          className="font-bold"
+        >
+          {userName}
+        </Text>
       </div>
-      <Text
-        placeholderClassName="w-48"
-        isLoading={isLoading}
-        className="font-bold"
-      >
-        {userName}
-      </Text>
+      {/* <Text placeholderClassName="w-10" isLoading={isLoading}>
+        <AiFillVideoCamera
+          className="text-accent text-xl cursor-pointer"
+          onClick={() => {
+            window.open(`${chatId}/${nanoid()}`);
+            handleStartRecording();
+          }}
+        />
+      </Text> */}
     </div>
   );
 };
