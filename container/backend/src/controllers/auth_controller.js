@@ -43,7 +43,11 @@ export const register = asyncHandler(async (req, res, next) => {
         button below to verify your email address.
       </p>
       <a href="http://${req.headers.host}/api/v1/auth/verify_email?token=${user.emailToken}"
-        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded flex items-center justify-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            d="M6.586 14.586L12 9.172l5.414 5.414a2 2 0 1 1-2.828 2.828L12 12.828l-5.586 5.586a2 2 0 1 1-2.828-2.828z" />
+        </svg>
         Verify Email
       </a>
       <p class="mt-6 text-gray-500 text-sm">
@@ -170,7 +174,11 @@ export const verifyEmail = asyncHandler(async (req, res, next) => {
     user.emailToken = null;
     user.isVerified = true;
     await user.save();
-    res.redirect(process.env.NODE_ENV === "development" ? process.env.DEV_BASE_URL + "/login" : process.env.PROD_BASE_URL + "/login");
+    res.redirect(
+      process.env.NODE_ENV === "development"
+        ? process.env.DEV_BASE_URL + "/login"
+        : process.env.PROD_BASE_URL + "/login"
+    );
   } else {
     return next(new ErrorResponse("Canot find user", 404));
   }
