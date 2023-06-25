@@ -1,18 +1,15 @@
-import { useLocation, useNavigate } from "react-router-dom";
 import { Suspense, useRef, useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
-import PrivateChat from "../user-chat";
-import Users from "../users/index";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Text from "../../components/Text";
 import NavBar from "../../layouts/Nav";
 import useSocket from "../../lib/useSocket";
+import { useDispatch, useSelector } from "react-redux";
+import { authSelector } from "../../appstate/auth/auth_slice";
 import {
   addActiveChats,
   addNewMessage,
   updateOne,
 } from "../../appstate/chats/chat_slice";
-import { useDispatch, useSelector } from "react-redux";
-import { authSelector } from "../../appstate/auth/auth_slice";
 import {
   useSendMessageMutation,
   useUploadImageMutation,
@@ -22,6 +19,8 @@ import Loading from "../../components/Loading";
 import { nanoid } from "@reduxjs/toolkit";
 import store from "../../appstate/store";
 import CallTab from "../call";
+import PrivateChat from "../user-chat";
+import Users from "../users/index";
 
 const Chats = () => {
   const id = window.location.pathname.split("/")[3];
@@ -39,29 +38,29 @@ const Chats = () => {
 
   const socket = useSocket();
   const { user, userIsLoading } = useSelector(authSelector);
-  // set and clear id's according to route
+
+  // Set and clear IDs according to route
   useEffect(() => {
     if (id) {
       setReceiver(id);
+    } else {
+      setReceiver("");
     }
-    return () => setReceiver("");
   }, [id]);
 
   useEffect(() => {
     if (_callId) {
       setCallId(_callId);
+    } else {
+      setCallId("");
     }
-    return () => setCallId("");
   }, [_callId]);
 
-  // application socket manager
+  // Application socket manager
   useEffect(() => {
-    if (!userIsLoading) {
-      socket?.emit("add-user", user);
-      socket?.on("list-users", (users) => {
-        dispatch(addActiveChats(users));
-      });
-      socket?.on("msg-recieve", (doc) => {
+    if (!userIsLoading && socket) {
+      socket.emit("add-user", user);
+      socket.on("msg-receive", (doc) => {
         dispatch(
           addNewMessage({
             _id: nanoid(),
@@ -70,7 +69,7 @@ const Chats = () => {
         );
       });
     }
-  }, [socket, user]);
+  }, [socket, user, userIsLoading]);
 
   async function sendMessageHandler(user, to, message) {
     if (message?.length === 0) return;
@@ -102,6 +101,7 @@ const Chats = () => {
       })
     );
   }
+
   async function sendFileAsMessageHandler(user, to, message) {
     const formData = new FormData();
     await formData.append("image", message);
@@ -144,10 +144,12 @@ const Chats = () => {
       state: id,
     });
   }
+
   return (
     <div className="w-full h-full flex">
       {/* Sidebar or Navbar */}
       <NavBar />
+
       {/* Routes to list users */}
       <UsersList
         onChange={(id) => {
@@ -155,8 +157,8 @@ const Chats = () => {
         }}
         receiver={receiver}
       />
-      {/* Routes to list user specific chat */}
 
+      {/* Routes to list user-specific chat */}
       {receiver?.length > 0 &&
         (callId?.length === 0 || callId?.length === undefined) && (
           <UserPrivateChat
@@ -166,14 +168,18 @@ const Chats = () => {
             submitHandler={sendMessageHandler}
           />
         )}
+
       {callId?.length > 0 && (
         <VideoCallTab receiver={receiver} callId={callId} />
       )}
+
       {receiver.length === 0 && <NoUserSelected />}
     </div>
   );
 };
+
 export default Chats;
+
 const UsersList = ({ onChange, receiver }) => {
   return (
     <div
@@ -191,6 +197,7 @@ const UsersList = ({ onChange, receiver }) => {
     </div>
   );
 };
+
 const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
   return (
     <div
@@ -212,6 +219,7 @@ const UserPrivateChat = ({ receiver, submitHandler, submitFileHandler }) => {
     </div>
   );
 };
+
 const VideoCallTab = ({ receiver, callId, userJoinCallHandler }) => {
   return (
     <div
@@ -228,6 +236,7 @@ const VideoCallTab = ({ receiver, callId, userJoinCallHandler }) => {
     </div>
   );
 };
+
 const NoUserSelected = () => {
   return (
     <div className="h-full w-full hidden sm:flex flex-col justify-center items-center">
