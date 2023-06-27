@@ -19,17 +19,19 @@ export default function (socket, io) {
 
   socket.on("send-msg", async (data) => {
     try {
+      console.log(data);
       const sendUserSocket = await OnlineUserModel.findOne({
         _id: data.to._id,
       });
       if (sendUserSocket) {
         socket.to(sendUserSocket.socketId).emit("msg-receive", data);
+      } else {
+        console.error("Recipient user not found.");
       }
     } catch (error) {
       console.error("Error sending message:", error);
     }
   });
-
   socket.on("disconnect", async () => {
     try {
       await OnlineUserModel.findOneAndDelete({ socketId: socket.id });

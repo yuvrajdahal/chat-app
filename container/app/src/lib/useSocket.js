@@ -8,8 +8,7 @@ import { isProd } from "./api";
 
 export default function useSocket() {
   const socket = useRef(null);
-  const { isSuccess } = useCurrentUser();
-  const dispatch = useDispatch();
+  const { user, userIsLoading } = useSelector(authSelector);
 
   useEffect(() => {
     socket.current = io(
@@ -22,7 +21,9 @@ export default function useSocket() {
     );
 
     socket.current.on("connect", () => {
-      console.log("Socket connected");
+      if (user._id) {
+        socket?.current.emit("add-user", user);
+      }
     });
 
     socket.current.on("disconnect", () => {
@@ -35,7 +36,7 @@ export default function useSocket() {
         socket.current.disconnect();
       }
     };
-  }, []);
+  }, [user]);
 
   return socket.current;
 }

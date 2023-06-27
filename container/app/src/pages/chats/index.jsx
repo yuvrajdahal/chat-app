@@ -56,20 +56,68 @@ const Chats = () => {
     }
   }, [_callId]);
 
+  function playAudio() {
+    const audioContext = new (window.AudioContext ||
+      window.webkitAudioContext)();
+    const audioElement = new Audio("/sound/pop.mp3");
+
+    // Create a source node from the audio element
+    const source = audioContext.createMediaElementSource(audioElement);
+
+    // Connect the source to the audio context's destination (output)
+    source.connect(audioContext.destination);
+
+    // Start playing the audio
+    audioElement.play();
+  }
+
   // Application socket manager
   useEffect(() => {
+    let originalTitle = document.title;
+    let timeoutId;
+
     if (!userIsLoading && socket) {
-      socket.emit("add-user", user);
-      socket.on("msg-receive", (doc) => {
-        dispatch(
-          addNewMessage({
-            _id: nanoid(),
-            ...doc,
-          })
-        );
-      });
+      socket.on("msg-receive", (doc) =>
+        handleIncomingMessage(doc, timeoutId, originalTitle)
+      );
     }
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        document.title = originalTitle;
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    // Clean up the event listener when the component unmounts
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [socket, user, userIsLoading]);
+
+  const handleIncomingMessage = (doc, timeoutId, originalTitle) => {
+    console.log(receiver === doc.from._id);
+    if (receiver === doc.from._id) {
+      dispatch(
+        addNewMessage({
+          _id: nanoid(),
+          ...doc,
+        })
+      );
+    }
+
+    document.title = `${doc?.from?.name} : ${doc?.message}`;
+
+    playAudio();
+
+    if (!document.hidden) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        document.title = originalTitle;
+      }, 1000);
+    }
+  };
 
   async function sendMessageHandler(user, to, message) {
     if (message?.length === 0) return;

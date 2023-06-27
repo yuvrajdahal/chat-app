@@ -101,7 +101,6 @@ const PrivateChat = ({
     });
     return isFounded;
   }
-
   return (
     <>
       <div className=" h-full flex flex-col justify-between py-2 px-2 overflow-hidden">
@@ -207,6 +206,7 @@ const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending }) => {
     isHover?.isHover == true &&
     message?._id.length !== 10;
   const isMe = (message) => message?.from._id === user?._id;
+
   return (
     <div className="pl-2 py-4 h-full flex flex-col gap-4 overflow-y-scroll my-4">
       {chats.map((message) => {
