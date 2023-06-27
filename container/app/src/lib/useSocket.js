@@ -20,17 +20,15 @@ export default function useSocket() {
       }
     );
 
-    if (user) {
-      socket.current.on("connect", () => {
-        if (user._id) {
-          socket?.current.emit("add-user", user);
-        }
-      });
+    socket.current.on("connect", () => {
+      if (user._id) {
+        socket?.current.emit("add-user", user);
+      }
+    });
 
-      socket.current.on("disconnect", () => {
-        console.log("Socket disconnected");
-      });
-    }
+    socket.current.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
 
     return () => {
       // Clean up the socket connection
