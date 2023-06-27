@@ -8,7 +8,7 @@ import { isProd } from "./api";
 
 export default function useSocket() {
   const socket = useRef(null);
-  const { user, userIsLoading } = useSelector(authSelector);
+  const { user } = useSelector(authSelector);
 
   useEffect(() => {
     socket.current = io(
