@@ -97,7 +97,6 @@ const Chats = () => {
   }, [socket, user, userIsLoading]);
 
   const handleIncomingMessage = (doc, timeoutId, originalTitle) => {
-    console.log(receiver === doc.from._id);
     if (receiver === doc.from._id) {
       dispatch(
         addNewMessage({
@@ -109,13 +108,13 @@ const Chats = () => {
 
     document.title = `${doc?.from?.name} : ${doc?.message}`;
 
-    playAudio();
-
     if (!document.hidden) {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         document.title = originalTitle;
       }, 1000);
+    } else {
+      playAudio();
     }
   };
 
