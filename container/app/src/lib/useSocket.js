@@ -1,14 +1,9 @@
 import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
-import { authSelector } from "../appstate/auth/auth_slice";
-import { addActiveChats } from "../appstate/chats/chat_slice";
-import { useCurrentUser } from "../appstate/users/user_service";
 import { isProd } from "./api";
 
 export default function useSocket() {
   const socket = useRef(null);
-  const { user } = useSelector(authSelector);
 
   useEffect(() => {
     socket.current = io(
@@ -19,11 +14,8 @@ export default function useSocket() {
         withCredentials: true,
       }
     );
-
     socket.current.on("connect", () => {
-      if (user._id) {
-        socket?.current.emit("add-user", user);
-      }
+      console.log("User Connected");
     });
 
     socket.current.on("disconnect", () => {
@@ -36,7 +28,7 @@ export default function useSocket() {
         socket.current.disconnect();
       }
     };
-  }, [user]);
+  }, []);
 
   return socket.current;
 }

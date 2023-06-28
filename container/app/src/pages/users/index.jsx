@@ -11,6 +11,7 @@ import {
 } from "../../appstate/chats/chat_service";
 import store from "../../appstate/store";
 import { authSelector } from "../../appstate/auth/auth_slice";
+import useSocket from "../../lib/useSocket";
 
 const Users = ({ onChangeChatUser }) => {
   const [index, setIndex] = useState(0);
@@ -18,8 +19,10 @@ const Users = ({ onChangeChatUser }) => {
   const { user } = useSelector(authSelector);
   const dispatch = useDispatch();
   const [refetchChats] = useRefetchChatsMutation();
+  const socket = useSocket();
   function onCardClick(index, id) {
     dispatch(removePreviousChat());
+    // socket?.current.emit("add-user", id);
     setIndex(index);
     onChangeChatUser(id);
     refetchChats({ from: user?._id, to: id });
