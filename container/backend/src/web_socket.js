@@ -1,7 +1,6 @@
 export default function (socket, io) {
   socket.on("add-user", async (user) => {
     try {
-      // const existingUser = await OnlineUserModel.findOne({ _id: user._id });
       socket.join(user._id);
     } catch (error) {
       console.error("Error adding user:", error);
@@ -16,7 +15,6 @@ export default function (socket, io) {
     }
   });
   socket.on("disconnect", () => disconnectUser(socket));
-  socket.on("beforeunload", () => disconnectUser(socket));
 }
 const disconnectUser = async (socket) => {
   try {
