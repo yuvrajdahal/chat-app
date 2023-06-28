@@ -63,9 +63,9 @@ const Chats = () => {
     if (!userIsLoading && socket) {
       socket?.emit("add-user", user);
 
-      socket.on("msg-receive", (doc) =>
-        handleIncomingMessage(doc, timeoutId, originalTitle)
-      );
+      socket.on("msg-receive", (doc) => {
+        handleIncomingMessage(doc, timeoutId, originalTitle);
+      });
     }
 
     const handleVisibilityChange = () => {
