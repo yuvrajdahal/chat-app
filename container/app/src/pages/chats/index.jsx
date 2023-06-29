@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { nanoid } from "@reduxjs/toolkit";
@@ -45,46 +45,46 @@ const Chats = () => {
     let originalTitle = document.title;
     let timeoutId;
 
-    if (user !== null && socket !== null) {
+    if (socket !== null) {
       socket.emit("add-user", user);
-      socket.on("msg-receive", (doc) => {
-        handleIncomingMessage(doc, timeoutId, originalTitle);
-      });
+      socket.on("msg-receive", handleIncomingMessage);
     }
 
-    // const handleVisibilityChange = () => {
-    //   if (document.hidden) {
-    //     document.title = originalTitle;
-    //   }
-    // };
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        document.title = originalTitle;
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
       clearTimeout(timeoutId);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (socket !== null) {
+        socket.off("msg-receive", handleIncomingMessage);
+      }
     };
-  }, [user, receiver]);
+  }, [user, dispatch, socket]);
 
-  const handleIncomingMessage = (doc, timeoutId, originalTitle) => {
-    // Check if conversation is with single room
-    if (window.location.pathname.split("/")[3] === doc.from._id) {
-      dispatch(
-        addNewMessage({
-          _id: nanoid(),
-          ...doc,
-        })
-      );
-    }
+  const handleIncomingMessage = useCallback(
+    (doc) => {
+      if (window.location.pathname.split("/")[3] === doc.from._id) {
+        dispatch(
+          addNewMessage({
+            _id: nanoid(),
+            ...doc,
+          })
+        );
+      }
 
-    document.title = `${doc?.from?.name} : ${doc?.message}`;
+      if (document.hidden) {
+        document.title = `${doc?.from?.name} : ${doc?.message}`;
+      }
 
-    if (!document.hidden) {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        document.title = originalTitle;
-      }, 1000);
-    }
-
-    if (document.hidden) playAudio("/sound/pop.mp3");
-  };
+      if (document.hidden) playAudio("/sound/pop.mp3");
+    },
+    [dispatch]
+  );
 
   async function sendMessageHandler(user, to, message) {
     if (message?.length === 0) return;

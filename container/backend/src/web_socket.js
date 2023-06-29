@@ -1,5 +1,6 @@
 export default function (socket, io) {
   socket.on("add-user", async (user) => {
+    console.log("User id is ", user._id);
     try {
       socket.join(user._id);
     } catch (error) {
