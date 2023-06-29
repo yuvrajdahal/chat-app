@@ -52,18 +52,16 @@ const Chats = () => {
       });
     }
 
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        document.title = originalTitle;
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    // const handleVisibilityChange = () => {
+    //   if (document.hidden) {
+    //     document.title = originalTitle;
+    //   }
+    // };
 
     return () => {
       clearTimeout(timeoutId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [user, location]);
+  }, [user, receiver]);
 
   const handleIncomingMessage = (doc, timeoutId, originalTitle) => {
     // Check if conversation is with single room
