@@ -5,6 +5,7 @@ import { useDeletMessageMutation } from "../../../appstate/chats/chat_service";
 import { classNames } from "../../../lib/utils";
 import Loading from "../../../components/Loading";
 import Text from "../../../components/Text";
+import { removeMessage } from "../../../appstate/chats/chat_slice";
 
 const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending }) => {
   const [isHover, setHover] = useState({

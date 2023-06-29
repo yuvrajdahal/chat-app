@@ -22,7 +22,6 @@ const Users = ({ onChangeChatUser }) => {
   const socket = useSocket();
   function onCardClick(index, id) {
     dispatch(removePreviousChat());
-    // socket?.current.emit("add-user", id);
     setIndex(index);
     onChangeChatUser(id);
     refetchChats({ from: user?._id, to: id });

@@ -16,6 +16,7 @@ import {
 import { addNewMessage, updateOne } from "../../appstate/chats/chat_slice";
 import useSocket from "../../lib/useSocket";
 import { authSelector } from "../../appstate/auth/auth_slice";
+import { playAudio } from "../../lib/sounds";
 
 const Chats = () => {
   const location = useLocation();
@@ -35,38 +36,17 @@ const Chats = () => {
   useEffect(() => {
     if (location.pathname.split("/")[3]) {
       if (receiver.length === 0) {
-        setReceiver(window.location.pathname.split("/")[3]);
+        setReceiver(location.pathname.split("/")[3]);
       }
     }
-  }, [id]);
+  }, [id, location]);
 
   useEffect(() => {
-    const handleIncomingMessage = (doc, timeoutId, originalTitle) => {
-      if (window.location.pathname.split("/")[3] === doc.from._id) {
-        dispatch(
-          addNewMessage({
-            _id: nanoid(),
-            ...doc,
-          })
-        );
-      }
-
-      document.title = `${doc?.from?.name} : ${doc?.message}`;
-
-      if (!document.hidden) {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-          document.title = originalTitle;
-        }, 1000);
-      } else {
-        playAudio();
-      }
-    };
-
     let originalTitle = document.title;
     let timeoutId;
 
     if (user !== null && socket !== null) {
+      socket.emit("add-user", user);
       socket.on("msg-receive", (doc) => {
         handleIncomingMessage(doc, timeoutId, originalTitle);
       });
@@ -83,18 +63,30 @@ const Chats = () => {
       clearTimeout(timeoutId);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [user]);
+  }, [user, location]);
 
-  function playAudio() {
-    const audioContext = new (window.AudioContext ||
-      window.webkitAudioContext)();
-    const audioElement = new Audio("/sound/pop.mp3");
+  const handleIncomingMessage = (doc, timeoutId, originalTitle) => {
+    // Check if conversation is with single room
+    if (window.location.pathname.split("/")[3] === doc.from._id) {
+      dispatch(
+        addNewMessage({
+          _id: nanoid(),
+          ...doc,
+        })
+      );
+    }
 
-    const source = audioContext.createMediaElementSource(audioElement);
-    source.connect(audioContext.destination);
+    document.title = `${doc?.from?.name} : ${doc?.message}`;
 
-    audioElement.play();
-  }
+    if (!document.hidden) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        document.title = originalTitle;
+      }, 1000);
+    }
+
+    if (document.hidden) playAudio("/sound/pop.mp3");
+  };
 
   async function sendMessageHandler(user, to, message) {
     if (message?.length === 0) return;
