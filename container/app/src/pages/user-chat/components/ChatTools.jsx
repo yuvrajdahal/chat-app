@@ -65,7 +65,7 @@ const ChatInputWithTool = ({
     <div className="w-full relative flex flex col">
       {checkFileType(message) === true && (
         <div className="absolute w-full -top-[120px] bg-dark-placeholder rounded-lg outline-none px-4 py-4">
-          <button className="relative w-full h-[80px] cursor-pointer w-[80px]  overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
+          <button className="relative h-[80px] cursor-pointer w-[80px]  overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">
             <div
               className="absolute right-2 rounded-full active:border-2 active:border-primary"
               onClick={() => {
