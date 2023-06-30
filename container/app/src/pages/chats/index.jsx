@@ -158,7 +158,9 @@ const Chats = () => {
     navigate(`users/${id}`, {
       state: id,
     });
-    socket?.emit("add-user", user);
+    if (user && socket) {
+      socket?.emit("add-user", user._id);
+    }
   }
 
   return (
