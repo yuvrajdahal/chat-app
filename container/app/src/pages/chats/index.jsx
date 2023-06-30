@@ -45,8 +45,8 @@ const Chats = () => {
     let originalTitle = document.title;
     let timeoutId;
 
-    if (socket !== null) {
-      socket.emit("add-user", user);
+    if (socket !== null && user !== null) {
+      socket.emit("add-user", user._id);
       socket.on("msg-receive", handleIncomingMessage);
     }
 

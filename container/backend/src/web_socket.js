@@ -1,11 +1,8 @@
 export default function (socket, io) {
-  socket.on("add-user", async (user) => {
-    console.log("User id is ", user._id);
-    try {
-      socket.join(user._id);
-    } catch (error) {
-      console.error("Error adding user:", error);
-    }
+  socket.on("add-user", async (roomId) => {
+    if (!roomId) return;
+    console.log("User id is ", roomId);
+    socket.join(roomId);
   });
 
   socket.on("send-msg", async (data) => {
