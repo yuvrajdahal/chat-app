@@ -7,7 +7,7 @@ import Loading from "../../../components/Loading";
 import Text from "../../../components/Text";
 import { removeMessage } from "../../../appstate/chats/chat_slice";
 
-const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending }) => {
+const ChatBody = ({ scrollRef, chats, user, imageExtIncludes, isSending }) => {
   const [isHover, setHover] = useState({
     id: null,
     isHover: false,
@@ -74,7 +74,7 @@ const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending }) => {
                 message,
                 setBlobImage,
                 blobImage,
-                checkFileOfImage
+                imageExtIncludes
               )}
             </Suspense>
             {showDeleteIconForConditions(message) && (
@@ -93,7 +93,7 @@ const ChatBody = ({ scrollRef, chats, user, checkFileOfImage, isSending }) => {
   );
 };
 export default ChatBody;
-function renderMessages(message, setBlobImage, blobImage, checkFileOfImage) {
+function renderMessages(message, setBlobImage, blobImage, imageExtIncludes) {
   // takes ArrayBuffer image as argument and converts into url
   // and return true
   async function convertFromBufferToImage(image) {
@@ -119,7 +119,7 @@ function renderMessages(message, setBlobImage, blobImage, checkFileOfImage) {
       </div>
     );
   }
-  if (checkFileOfImage(message?.message)) {
+  if (imageExtIncludes(message?.message)) {
     return (
       <div
         className={classNames(

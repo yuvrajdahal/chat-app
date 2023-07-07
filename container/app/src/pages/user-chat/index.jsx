@@ -50,16 +50,18 @@ const PrivateChat = ({
     setMessage("");
   }
 
-  async function sendMessageHandler(i) {
+  async function sendMessageHandler() {
     submitHandler(user, selectedUser, messageToBeSend);
     setImage("");
     setMessage("");
   }
-  function checkFileType(file) {
-    if (typeof file === "string") return false;
+  function createFileToUrl(file) {
     if (!file) return false;
+
     let fileTypes = ["jpg", "jpeg", "png"];
+
     let extension = file.name.split(".").pop().toLowerCase();
+
     if (fileTypes.indexOf(extension) > -1 === false) {
       add.error("File must be png or jpeg");
     }
@@ -71,6 +73,7 @@ const PrivateChat = ({
     };
     return true;
   }
+
   // checks file type
   function imageExtIncludes(array = []) {
     if (array instanceof ArrayBuffer === true) return false;
@@ -94,7 +97,7 @@ const PrivateChat = ({
         {!chatLoading && (
           <ChatBody
             user={user}
-            checkFileOfImage={imageExtIncludes}
+            imageExtIncludes={imageExtIncludes}
             chats={chats}
             isSending={isSending}
             scrollRef={scrollRef}
@@ -107,7 +110,7 @@ const PrivateChat = ({
         )}
         {/* tools */}
         <ChatTools
-          checkFileType={checkFileType}
+          createFileToUrl={createFileToUrl}
           message={messageToBeSend}
           image={image}
           imageSetter={setImage}
