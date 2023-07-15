@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js ",
     "babel:compile": "babel src -d build",
-    "start": "npm run babel:compile && NODE_ENV=production node build/index.js"
+    "start": "yarn run babel:compile && NODE_ENV=production node build/index.js"
   },
   "keywords": [],
   "author": "",
