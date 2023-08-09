@@ -12,10 +12,6 @@
     "build-app": "NPM_CONFIG_PRODUCTION=false npm install --legacy-peer-deps && npm run build --workspace=@chat-app/app"
   },
   "dependencies": {
-    "axios": "^1.2.1",
     "concurrently": "^7.6.0"
-  },
-  "devDependencies": {
-    "@wixc3/react-board": "^2.1.3"
   }
 }
