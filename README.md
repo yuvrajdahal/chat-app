@@ -35,7 +35,7 @@ This repository contains a private chat application built using container worksp
 **Note:** This repository is private, and the code is not available for public access.
 
 ```
-There are two .env files for backend ( /src/config ) and frontend ( /app/.env )respectiveley
+There are two .env files for backend ( /src/config ) and frontend ( /app/.env ) respectiveley
 
 For any questions or assistance, please contact [iamyuvraj456@gmail.com](mailto:iamyuvraj456@gmail.com).
 
